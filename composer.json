@@ -1,0 +1,22 @@
+{
+  "name": "salsify/JsonStreamingParser",
+  "version": "0.1",
+  "description": "A streaming parser for JSON in PHP.",
+  "keywords": ["json", "parser", "streaming"],
+  "homepage": "https://github.com/socialceramics/jsonstreamingparser",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+        "name": "Rob Gonzalez",
+        "email": "rob@salsify.com",
+        "homepage": "http://salsify.com/"
+    }
+  ],
+  "require": {
+      "php": ">=5.3"
+  },
+  "autoload": {
+    "psr-0": { "JsonStreamingParser": "src/" }
+  }
+}
