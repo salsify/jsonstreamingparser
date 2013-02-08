@@ -31,4 +31,4 @@ There is a complete example of this in `example/example.php`.
 License
 -------
 
-[MIT Licnese](http://mit-license.org/)
+[MIT License](http://mit-license.org/) (c) Salsify, Inc.
