@@ -11,7 +11,8 @@ Usage
 
 To use the `JsonStreamingParser` you just have to implement the `\JsonStreamingParser\Listener` interface. You then pass your `Listener` into the parser. For example:
 
-```$stream = fopen('doc.json', 'r');
+```php
+$stream = fopen('doc.json', 'r');
 $listener = new YourListener();
 try {
   $parser = new \JsonStreamingParser\Parser($stream, $listener);
