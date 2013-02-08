@@ -433,6 +433,7 @@ class Parser {
     } else {
       throw new ParsingError("Expected 'true'. Got: ".$true);
     }
+    $this->_buffer = array();
     $this->_state = self::STATE_AFTER_VALUE;
   }
 
@@ -443,6 +444,7 @@ class Parser {
     } else {
       throw new ParsingError("Expected 'false'. Got: ".$false);
     }
+    $this->_buffer = array();
     $this->_state = self::STATE_AFTER_VALUE;
   }
 
@@ -453,6 +455,7 @@ class Parser {
     } else {
       throw new ParsingError("Expected 'null'. Got: ".$null);
     }
+    $this->_buffer = array();
     $this->_state = self::STATE_AFTER_VALUE;
   }
 

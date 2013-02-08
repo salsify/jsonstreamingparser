@@ -1,0 +1,19 @@
+[
+  {
+    "name": "example document for wicked fast parsing of huge json docs",
+    "integer": 123,
+    "totally sweet scientific notation": -123.123e-2,
+    "unicode? you betcha!": "ú™£¢∞§\u2665",
+    "null is boring": null
+  },
+  {
+    "name": "another object",
+    "cooler than first object?": true,
+    "nested object": {
+      "nested object?": true,
+      "is nested array the same combination i have on my luggage?": true,
+      "nested array": [1,2,3,4,5]
+    },
+    "false": false
+  }
+]

@@ -5,10 +5,29 @@ This is a simple, streaming parser for processing large JSON documents. Use it f
 
 If you've ever used a [SAX parser](http://en.wikipedia.org/wiki/Simple_API_for_XML) for XML (or even JSON) in another language, that's what this is. Except for JSON in PHP.
 
-= Usage
 
-TODO
+Usage
+-----
 
-= License
+To use the `JsonStreamingParser` you just have to implement the `\JsonStreamingParser\Listener` interface. You then pass your `Listener` into the parser. For example:
+
+```$stream = fopen('doc.json', 'r');
+$listener = new YourListener();
+try {
+  $parser = new \JsonStreamingParser\Parser($stream, $listener);
+  $parser->parse();
+} catch (Exception $e) {
+  fclose($stream);
+  throw $e;
+}
+```
+
+That's it! Your `Listener` will receive events from the streaming parser as it works.
+
+There is a complete example of this in `example/example.php`.
+
+
+License
+-------
 
 [MIT Licnese](http://mit-license.org/)
