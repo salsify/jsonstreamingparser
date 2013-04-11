@@ -214,7 +214,7 @@ class Parser {
   // Thanks to: http://www.php.net/manual/en/function.str-split.php
   private function _unicode_str_split($str)
   {
-    preg_match_all('/./u', $str, $arr);
+    preg_match_all("/[[:print:]\pL]/u", $str, $arr);
     $arr = array_chunk($arr[0], 1);
     $arr = array_map('implode', $arr);
     return $arr;
