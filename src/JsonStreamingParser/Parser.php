@@ -56,15 +56,20 @@ class Parser {
 
   public function parse() {
     while (!feof($this->_stream)) {
-      $this->_parse(fread($this->_stream, 8192));
+      $line = $this->_unicode_str_split(fgets($this->_stream, 8192));
+      foreach ($line as $c) {
+        $this->_consume_char($c);
+      }
     }
   }
 
 
-  private function _parse($str) {
-    foreach ($this->_unicode_str_split($str) as $c) {
-      $this->_consume_char($c);
-    }
+  // Thanks to: http://www.php.net/manual/en/function.str-split.php
+  private function _unicode_str_split($bytes) {
+    preg_match_all("/[[:print:]\pL]/u", $bytes, $arr);
+    $arr = array_chunk($arr[0], 1);
+    $arr = array_map('implode', $arr);
+    return $arr;
   }
 
   private function _consume_char($c) {
@@ -72,7 +77,8 @@ class Parser {
         !($this->_state === self::STATE_IN_STRING ||
           $this->_state === self::STATE_UNICODE ||
           $this->_state === self::STATE_START_ESCAPE ||
-          $this->_state === self::STATE_IN_NUMBER)) {
+          $this->_state === self::STATE_IN_NUMBER ||
+          $this->_state === self::STATE_START_DOCUMENT)) {
       return;
     }
 
@@ -210,15 +216,6 @@ class Parser {
     }
   }
 
-
-  // Thanks to: http://www.php.net/manual/en/function.str-split.php
-  private function _unicode_str_split($str)
-  {
-    preg_match_all("/[[:print:]\pL]/u", $str, $arr);
-    $arr = array_chunk($arr[0], 1);
-    $arr = array_map('implode', $arr);
-    return $arr;
-  }
 
   private function _is_whitespace($c) {
     return preg_match('/\s/u', $c);
