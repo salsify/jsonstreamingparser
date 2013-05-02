@@ -1,7 +1,5 @@
 <?php
-namespace JsonStreamingParser;
-
-interface Listener {
+interface JsonStreamingParser_Listener {
   public function start_document();
   public function end_document();
 

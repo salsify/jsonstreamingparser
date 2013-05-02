@@ -8,7 +8,7 @@ require_once dirname(__FILE__).'/../src/JsonStreamingParser/Parser.php';
  * point of a streaming parser is to avoid doing just that. However, it gets
  * the point across.
  */
-class ArrayMaker implements \JsonStreamingParser\Listener {
+class ArrayMaker implements JsonStreamingParser_Listener {
   private $_json;
 
   private $_stack;
@@ -73,7 +73,7 @@ $testfile = dirname(__FILE__).'/example.json';
 $listener = new ArrayMaker();
 $stream = fopen($testfile, 'r');
 try {
-  $parser = new \JsonStreamingParser\Parser($stream, $listener);
+  $parser = new JsonStreamingParser_Parser($stream, $listener);
   $parser->parse();
 } catch (Exception $e) {
   fclose($stream);

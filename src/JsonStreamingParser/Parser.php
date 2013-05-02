@@ -1,10 +1,8 @@
 <?php
-namespace JsonStreamingParser;
-
 require_once 'ParsingError.php';
 require_once 'Listener.php';
 
-class Parser {
+class JsonStreamingParser_Parser {
   private $_state;
   const STATE_START_DOCUMENT     = 0;
   const STATE_DONE               = -1;
@@ -36,10 +34,10 @@ class Parser {
 
   public function __construct($stream, $listener) {
     if (!is_resource($stream) || get_resource_type($stream) != 'stream') {
-      throw new \InvalidArgumentException("Argument is not a stream");
+      throw new InvalidArgumentException("Argument is not a stream");
     }
-    if (!in_array("JsonStreamingParser\\Listener", class_implements(get_class($listener)))) {
-      throw new \InvalidArgumentException("Listener must implement \\JsonStreamingParser\\Listener");
+    if (!in_array("JsonStreamingParser_Listener", class_implements(get_class($listener)))) {
+      throw new InvalidArgumentException("Listener must implement JsonStreamingParser_Listener");
     }
 
     $this->_stream = $stream;
