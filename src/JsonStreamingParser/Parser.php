@@ -28,6 +28,7 @@ class JsonStreamingParser_Parser {
   private $_stream;
   private $_listener;
   private $_buffer;
+  private $_buffer_size;
   private $_unicode_buffer;
   private $_unicode_high_codepoint;
 
@@ -47,6 +48,7 @@ class JsonStreamingParser_Parser {
     $this->_stack = array();
 
     $this->_buffer = array();
+    $this->_buffer_size = 8192;
     $this->_unicode_buffer = array();
     $this->_unicode_high_codepoint = -1;
   }
@@ -54,7 +56,12 @@ class JsonStreamingParser_Parser {
 
   public function parse() {
     while (!feof($this->_stream)) {
-      $line = $this->_unicode_str_split(fgets($this->_stream, 8192));
+      if(function_exists('stream_get_line')) {
+        $line = $this->_unicode_str_split(stream_get_line($this->_stream, $this->_buffer_size));
+      }
+      else {
+        $line = $this->_unicode_str_split(fgets($this->_stream, $this->_buffer_size));
+      }
       foreach ($line as $c) {
         $this->_consume_char($c);
       }
