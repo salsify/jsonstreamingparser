@@ -1,6 +1,5 @@
 {
   "name": "salsify/JsonStreamingParser",
-  "version": "0.1",
   "description": "A streaming parser for JSON in PHP.",
   "keywords": ["json", "parser", "streaming"],
   "homepage": "https://github.com/salsify/jsonstreamingparser",
