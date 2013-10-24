@@ -1,2 +1,5 @@
 test-data
 tmp
+/.idea
+/composer.lock
+/vendor

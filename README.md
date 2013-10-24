@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Magomogo/jsonstreamingparser.png?branch=master)](https://travis-ci.org/Magomogo/jsonstreamingparser)
+
 php-streaming-json-parser
 =========================
 
