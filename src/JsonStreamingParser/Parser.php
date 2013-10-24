@@ -68,13 +68,11 @@ class JsonStreamingParser_Parser {
     }
   }
 
-
-  // Thanks to: http://www.php.net/manual/en/function.str-split.php
   private function _unicode_str_split($bytes) {
-    preg_match_all("/[[:print:]\pL]/u", $bytes, $arr);
-    $arr = array_chunk($arr[0], 1);
-    $arr = array_map('implode', $arr);
-    return $arr;
+    return array_filter(
+      preg_split('//u', $bytes),
+      function ($i) { return ($i === ' ') || trim($i);}
+    );
   }
 
   private function _consume_char($c) {
