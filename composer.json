@@ -7,15 +7,26 @@
   "license": "MIT",
   "authors": [
     {
-        "name": "Rob Gonzalez",
-        "email": "rob@salsify.com",
-        "homepage": "http://salsify.com/"
+      "name": "Rob Gonzalez",
+      "email": "rob@salsify.com",
+      "homepage": "http://salsify.com/"
+    },
+    {
+      "name": "Maxim Gnatenko",
+      "email": "mgnatenko@gmail.com"
     }
   ],
   "require": {
-      "php": ">=5.3"
+    "php": ">=5.3"
   },
+
+  "require-dev": {
+    "phpunit/phpunit": "~3.7.0"
+  },
+
   "autoload": {
-    "psr-0": { "JsonStreamingParser": "src/" }
+    "psr-0": {
+      "JsonStreamingParser": "src/"
+    }
   }
 }
