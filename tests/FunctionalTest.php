@@ -23,8 +23,10 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         'value = -1.23123',
         'key = unicode? you betcha!',
         'value = ú™£¢∞§♥',
+        'key = zero character',
+        'value = 0',
         'key = null is boring',
-        'value = ',
+        'value = NULL',
         'end_object',
         'start_object',
         'key = name',
@@ -47,7 +49,7 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         'end_array',
         'end_object',
         'key = false',
-        'value = ',
+        'value = false',
         'end_object',
         'end_array',
         'end_document',
@@ -96,11 +98,16 @@ class TestListener implements \JsonStreamingParser_Listener
 
   public function key($key)
   {
-    $this->order[] = __FUNCTION__ . ' = ' . $key;
+    $this->order[] = __FUNCTION__ . ' = ' . self::stringify($key);
   }
 
   public function value($value)
   {
-    $this->order[] = __FUNCTION__ . ' = ' . $value;
+    $this->order[] = __FUNCTION__ . ' = ' . self::stringify($value);
+  }
+
+  private static function stringify($value)
+  {
+    return strlen($value) ? $value : var_export($value, true);
   }
 }

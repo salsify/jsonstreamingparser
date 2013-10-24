@@ -71,7 +71,7 @@ class JsonStreamingParser_Parser {
   private function _unicode_str_split($bytes) {
     return array_filter(
       preg_split('//u', $bytes),
-      function ($i) { return ($i === ' ') || trim($i);}
+      function ($i) { return ($i === ' ') || strlen(trim($i));}
     );
   }
 
