@@ -69,14 +69,11 @@ class JsonStreamingParser_Parser {
   }
 
   private function _unicode_str_split($bytes) {
-    return array_filter(
-      preg_split('//u', $bytes),
-      function ($i) { return ($i === ' ') || strlen(trim($i));}
-    );
+    return preg_split('//u', $bytes, -1, PREG_SPLIT_NO_EMPTY);
   }
 
   private function _consume_char($c) {
-    if ($this->_is_whitespace($c) &&
+    if (($c === " " || $c === "\n" || $c === "\t" || $c === "\r" || $c === "\0" || $c === "\x0B") &&
         !($this->_state === self::STATE_IN_STRING ||
           $this->_state === self::STATE_UNICODE ||
           $this->_state === self::STATE_START_ESCAPE ||
@@ -158,7 +155,7 @@ class JsonStreamingParser_Parser {
             throw new JsonStreamingParser_ParsingError("Expected ',' or ']' while parsing array. Got: ".$c);
           }
         } else {
-          throw JsonStreamingParser_ParsingError("Finished a literal, but unclear what state to move to. Last state: ".$within);
+          throw new JsonStreamingParser_ParsingError("Finished a literal, but unclear what state to move to. Last state: ".$within);
         }
         break;
 
@@ -217,11 +214,6 @@ class JsonStreamingParser_Parser {
       default:
         throw new JsonStreamingParser_ParsingError("Internal error. Reached an unknown state: ".$this->_state);
     }
-  }
-
-
-  private function _is_whitespace($c) {
-    return preg_match('/\s/u', $c);
   }
 
   private function _is_control_character($c) {
