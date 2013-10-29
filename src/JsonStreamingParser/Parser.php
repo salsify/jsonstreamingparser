@@ -69,10 +69,10 @@ class JsonStreamingParser_Parser {
   }
 
   private function _unicode_str_split($bytes) {
-    return array_filter(
-      preg_split('//u', $bytes),
-      function ($i) { return ($i === ' ') || strlen(trim($i));}
-    );
+    preg_match_all("/[[:print:]\pL]/u", $bytes, $arr);
+    $arr = array_chunk($arr[0], 1);
+    $arr = array_map('implode', $arr);
+    return $arr;
   }
 
   private function _consume_char($c) {

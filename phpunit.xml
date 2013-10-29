@@ -8,7 +8,7 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="true"
-         bootstrap="./vendor/autoload.php"
+         bootstrap="phpunit_bootstrap.php"
 >
     <testsuites>
         <testsuite name="All">
