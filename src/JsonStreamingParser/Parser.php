@@ -71,7 +71,7 @@ class JsonStreamingParser_Parser {
   private function _unicode_str_split($bytes) {
     // FIXME we are still getting the error of basically reading across a
     //       unicode character boundary with this.
-    return preg_split('//u', $bytes, -1, PREG_SPLIT_NO_EMPTY);
+    return preg_split('//', $bytes, -1, PREG_SPLIT_NO_EMPTY);
   }
 
   private function _consume_char($c) {
