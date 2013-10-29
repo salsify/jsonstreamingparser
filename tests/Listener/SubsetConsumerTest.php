@@ -41,17 +41,29 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
     );
   }
 
-  public function testCollectsStructureCorrectly()
+  /**
+   * @dataProvider differentJsonFiles
+   */
+  public function testCollectsStructureCorrectly($fileToProcess)
   {
     $listener = new IdealConsumer;
-    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/../../example/example.json', 'r'), $listener);
+    $parser = new \JsonStreamingParser_Parser(fopen($fileToProcess, 'r'), $listener);
     $parser->parse();
 
     $this->assertEquals(
-      json_decode(file_get_contents(__DIR__ . '/../../example/example.json'), true),
+      json_decode(file_get_contents($fileToProcess), true),
       $listener->data
     );
 
+  }
+
+  public static function differentJsonFiles()
+  {
+    return array(
+      array(__DIR__ . '/../../example/example.json'),
+      array(__DIR__ . '/data/plain.json'),
+      array(__DIR__ . '/data/dateRanges.json')
+    );
   }
 }
 
