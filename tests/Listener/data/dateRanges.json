@@ -1,0 +1,11 @@
+{
+  "data": [
+    {"rows" :
+      [
+        {"startDate": "2013-10-24", "endDate": "2013-10-25"},
+        {"startDate": "2013-10-26", "endDate": "2013-10-27"}
+      ]
+    }
+  ],
+  "anotherPlace": {"startDate": "2013-11-01", "endDate": "2013-11-10"}
+}
