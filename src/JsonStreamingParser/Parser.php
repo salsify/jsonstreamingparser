@@ -343,13 +343,13 @@ class JsonStreamingParser_Parser {
     } elseif ($c === 'b') {
       $this->_buffer .= '\b';
     } elseif ($c === 'f') {
-      $this->_buffer .= '\f';
+      $this->_buffer .= "\f";
     } elseif ($c === 'n') {
-      $this->_buffer .= '\n';
+      $this->_buffer .= "\n";
     } elseif ($c === 'r') {
-      $this->_buffer .= '\r';
+      $this->_buffer .= "\r";
     } elseif ($c === 't') {
-      $this->_buffer .= '\t';
+      $this->_buffer .= "\t";
     } elseif ($c === 'u') {
       $this->_state = self::STATE_UNICODE;
     } else {
