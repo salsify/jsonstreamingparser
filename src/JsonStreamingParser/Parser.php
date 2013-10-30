@@ -56,27 +56,19 @@ class JsonStreamingParser_Parser {
 
   public function parse() {
     while (!feof($this->_stream)) {
-      if(function_exists('stream_get_line')) {
-        $line = $this->_unicode_str_split(stream_get_line($this->_stream, $this->_buffer_size));
-      }
-      else {
-        $line = $this->_unicode_str_split(fgets($this->_stream, $this->_buffer_size));
-      }
-      foreach ($line as $c) {
-        $this->_consume_char($c);
+      $line = stream_get_line($this->_stream, $this->_buffer_size);
+      $byteLen = strlen($line);
+      for ($i = 0; $i < $byteLen; $i++) {
+        $this->_consume_char($line[$i]);
       }
     }
   }
 
-  private function _unicode_str_split($bytes) {
-    // FIXME we are still getting the error of basically reading across a
-    //       unicode character boundary with this.
-    return preg_split('//', $bytes, -1, PREG_SPLIT_NO_EMPTY);
-  }
-
   private function _consume_char($c) {
-    // preg_match check skips whitespace
-    if (preg_match('/\s/u', $c) &&
+    // valid whitespace characters in JSON (from RFC4627 for JSON) include:
+    // space, horizontal tab, line feed or new line, and carriage return.
+    // thanks: http://stackoverflow.com/questions/16042274/definition-of-whitespace-in-json
+    if (($c == " " || $c == "\t" || $c == "\n" || $c == "\r") &&
         !($this->_state === self::STATE_IN_STRING ||
           $this->_state === self::STATE_UNICODE ||
           $this->_state === self::STATE_START_ESCAPE ||
