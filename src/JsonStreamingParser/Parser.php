@@ -57,21 +57,16 @@ class JsonStreamingParser_Parser {
   public function parse() {
     while (!feof($this->_stream)) {
       if(function_exists('stream_get_line')) {
-        $line = $this->_unicode_str_split(stream_get_line($this->_stream, $this->_buffer_size));
+        $line = stream_get_line($this->_stream, $this->_buffer_size);
       }
       else {
-        $line = $this->_unicode_str_split(fgets($this->_stream, $this->_buffer_size));
+        $line = fgets($this->_stream, $this->_buffer_size);
       }
-      foreach ($line as $c) {
-        $this->_consume_char($c);
+      $byteLen = strlen($line);
+      for ($i = 0; $i < $byteLen; $i++) {
+        $this->_consume_char($line[$i]);
       }
     }
-  }
-
-  private function _unicode_str_split($bytes) {
-    // FIXME we are still getting the error of basically reading across a
-    //       unicode character boundary with this.
-    return preg_split('//', $bytes, -1, PREG_SPLIT_NO_EMPTY);
   }
 
   private function _consume_char($c) {
