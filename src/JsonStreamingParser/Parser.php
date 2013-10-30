@@ -70,8 +70,8 @@ class JsonStreamingParser_Parser {
   }
 
   private function _consume_char($c) {
-    // preg_match check skips whitespace
-    if (preg_match('/\s/u', $c) &&
+    // whitespace \s
+    if (($c === " " || $c === "\f" || $c === "\n" || $c === "\r" || $c === "\t" || $c === "\x0B") &&
         !($this->_state === self::STATE_IN_STRING ||
           $this->_state === self::STATE_UNICODE ||
           $this->_state === self::STATE_START_ESCAPE ||
