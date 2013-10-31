@@ -333,7 +333,7 @@ class JsonStreamingParser_Parser {
     } elseif ($c === '/') {
       $this->_buffer .= '/';
     } elseif ($c === 'b') {
-      $this->_buffer .= '\b';
+      $this->_buffer .= "\x08";
     } elseif ($c === 'f') {
       $this->_buffer .= "\f";
     } elseif ($c === 'n') {
