@@ -56,12 +56,7 @@ class JsonStreamingParser_Parser {
 
   public function parse() {
     while (!feof($this->_stream)) {
-      if(function_exists('stream_get_line')) {
-        $line = stream_get_line($this->_stream, $this->_buffer_size);
-      }
-      else {
-        $line = fgets($this->_stream, $this->_buffer_size);
-      }
+      $line = stream_get_line($this->_stream, $this->_buffer_size);
       $byteLen = strlen($line);
       for ($i = 0; $i < $byteLen; $i++) {
         $this->_consume_char($line[$i]);
@@ -70,8 +65,10 @@ class JsonStreamingParser_Parser {
   }
 
   private function _consume_char($c) {
-    // whitespace \s
-    if (($c === " " || $c === "\f" || $c === "\n" || $c === "\r" || $c === "\t" || $c === "\x0B") &&
+    // valid whitespace characters in JSON (from RFC4627 for JSON) include:
+    // space, horizontal tab, line feed or new line, and carriage return.
+    // thanks: http://stackoverflow.com/questions/16042274/definition-of-whitespace-in-json
+    if (($c === " " || $c === "\t" || $c === "\n" || $c === "\r") &&
         !($this->_state === self::STATE_IN_STRING ||
           $this->_state === self::STATE_UNICODE ||
           $this->_state === self::STATE_START_ESCAPE ||
