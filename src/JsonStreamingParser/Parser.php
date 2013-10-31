@@ -68,7 +68,7 @@ class JsonStreamingParser_Parser {
     // valid whitespace characters in JSON (from RFC4627 for JSON) include:
     // space, horizontal tab, line feed or new line, and carriage return.
     // thanks: http://stackoverflow.com/questions/16042274/definition-of-whitespace-in-json
-    if (($c == " " || $c == "\t" || $c == "\n" || $c == "\r") &&
+    if (($c === " " || $c === "\t" || $c === "\n" || $c === "\r") &&
         !($this->_state === self::STATE_IN_STRING ||
           $this->_state === self::STATE_UNICODE ||
           $this->_state === self::STATE_START_ESCAPE ||
@@ -333,15 +333,15 @@ class JsonStreamingParser_Parser {
     } elseif ($c === '/') {
       $this->_buffer .= '/';
     } elseif ($c === 'b') {
-      $this->_buffer .= '\b';
+      $this->_buffer .= "\x08";
     } elseif ($c === 'f') {
-      $this->_buffer .= '\f';
+      $this->_buffer .= "\f";
     } elseif ($c === 'n') {
-      $this->_buffer .= '\n';
+      $this->_buffer .= "\n";
     } elseif ($c === 'r') {
-      $this->_buffer .= '\r';
+      $this->_buffer .= "\r";
     } elseif ($c === 't') {
-      $this->_buffer .= '\t';
+      $this->_buffer .= "\t";
     } elseif ($c === 'u') {
       $this->_state = self::STATE_UNICODE;
     } else {

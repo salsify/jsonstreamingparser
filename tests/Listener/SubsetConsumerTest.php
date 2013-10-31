@@ -62,7 +62,8 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
     return array(
       array(__DIR__ . '/../../example/example.json'),
       array(__DIR__ . '/data/plain.json'),
-      array(__DIR__ . '/data/dateRanges.json')
+      array(__DIR__ . '/data/dateRanges.json'),
+      array(__DIR__ . '/data/escapedChars.json'),
     );
   }
 }
