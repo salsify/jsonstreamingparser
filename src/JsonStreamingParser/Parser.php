@@ -26,14 +26,20 @@ class JsonStreamingParser_Parser {
   private $_stack;
 
   private $_stream;
+
+  /**
+   * @var JsonStreamingParser_Listener
+   */
   private $_listener;
+
   private $_buffer;
   private $_buffer_size;
   private $_unicode_buffer;
   private $_unicode_high_codepoint;
+  private $_line_ending;
 
 
-  public function __construct($stream, $listener) {
+  public function __construct($stream, $listener, $line_ending = "\n") {
     if (!is_resource($stream) || get_resource_type($stream) != 'stream') {
       throw new InvalidArgumentException("Argument is not a stream");
     }
@@ -51,14 +57,20 @@ class JsonStreamingParser_Parser {
     $this->_buffer_size = 8192;
     $this->_unicode_buffer = array();
     $this->_unicode_high_codepoint = -1;
+    $this->_line_ending = $line_ending;
   }
 
 
   public function parse() {
+    $line_number = 0;
+
     while (!feof($this->_stream)) {
-      $line = stream_get_line($this->_stream, $this->_buffer_size);
+      $line = stream_get_line($this->_stream, $this->_buffer_size, $this->_line_ending);
+      $line_number++;
+
       $byteLen = strlen($line);
       for ($i = 0; $i < $byteLen; $i++) {
+        $this->_listener->file_position($line_number, $i);
         $this->_consume_char($line[$i]);
       }
     }

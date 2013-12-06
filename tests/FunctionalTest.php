@@ -57,6 +57,26 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
       $listener->order
     );
   }
+
+  public function testListenerGetsNotifiedAboutPositionInFileOfDataRead()
+  {
+    $listener = new TestListener();
+    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/Listener/data/dateRanges.json', 'r'), $listener);
+    $parser->parse();
+
+    $this->assertSame(
+      array(
+        array('value' => '2013-10-24', 'line' => 5, 'char' => 33,),
+        array('value' => '2013-10-25', 'line' => 5, 'char' => 58,),
+        array('value' => '2013-10-26', 'line' => 6, 'char' => 33,),
+        array('value' => '2013-10-27', 'line' => 6, 'char' => 58,),
+        array('value' => '2013-11-01', 'line' => 10, 'char' => 43,),
+        array('value' => '2013-11-10','line' => 10, 'char' => 68,),
+      ),
+      $listener->positions
+    );
+  }
+
 }
 
 //======================================================================================================================
@@ -65,6 +85,17 @@ class TestListener implements \JsonStreamingParser_Listener
 {
 
   public $order = array();
+
+  public $positions = array();
+
+  private $currentLine;
+  private $currentChar;
+
+  public function file_position($line, $char)
+  {
+    $this->currentLine = $line;
+    $this->currentChar = $char;
+  }
 
   public function start_document()
   {
@@ -104,6 +135,7 @@ class TestListener implements \JsonStreamingParser_Listener
   public function value($value)
   {
     $this->order[] = __FUNCTION__ . ' = ' . self::stringify($value);
+    $this->positions[] = array('value' => $value, 'line' => $this->currentLine, 'char' => $this->currentChar);
   }
 
   private static function stringify($value)
