@@ -77,6 +77,33 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     );
   }
 
+  public function testCountsLongLinesCorrectly()
+  {
+    $longStream = fopen('php://memory', 'rw');
+    $value = str_repeat('!', 10000);
+    fwrite($longStream, <<<JSON
+[
+  "$value",
+  "$value"
+]
+JSON
+    );
+    fseek($longStream, 0);
+
+    $listener = new TestListener();
+    $parser = new \JsonStreamingParser_Parser($longStream, $listener);
+    $parser->parse();
+
+    unset($listener->positions[0]['value']);
+    unset($listener->positions[1]['value']);
+
+    $this->assertSame(array(
+        array('line' => 2, 'char' => 10003,),
+        array('line' => 3, 'char' => 10003,),
+      ),
+      $listener->positions
+    );
+  }
 }
 
 //======================================================================================================================

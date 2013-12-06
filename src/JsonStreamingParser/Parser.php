@@ -62,17 +62,25 @@ class JsonStreamingParser_Parser {
 
 
   public function parse() {
-    $line_number = 0;
+    $line_number = 1;
+    $char_number = 1;
 
     while (!feof($this->_stream)) {
+      $pos = ftell($this->_stream);
       $line = stream_get_line($this->_stream, $this->_buffer_size, $this->_line_ending);
-      $line_number++;
+      $ended = (bool)(ftell($this->_stream) - strlen($line) - $pos);
 
       $byteLen = strlen($line);
       for ($i = 0; $i < $byteLen; $i++) {
-        $this->_listener->file_position($line_number, $i);
+        $this->_listener->file_position($line_number, $char_number++);
         $this->_consume_char($line[$i]);
       }
+
+      if ($ended) {
+        $line_number++;
+        $char_number = 0;
+      }
+
     }
   }
 
