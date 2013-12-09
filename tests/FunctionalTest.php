@@ -66,12 +66,12 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
 
     $this->assertSame(
       array(
-        array('value' => '2013-10-24', 'line' => 5, 'char' => 33,),
-        array('value' => '2013-10-25', 'line' => 5, 'char' => 58,),
-        array('value' => '2013-10-26', 'line' => 6, 'char' => 33,),
-        array('value' => '2013-10-27', 'line' => 6, 'char' => 58,),
-        array('value' => '2013-11-01', 'line' => 10, 'char' => 43,),
-        array('value' => '2013-11-10','line' => 10, 'char' => 68,),
+        array('value' => '2013-10-24', 'line' => 5, 'char' => 34,),
+        array('value' => '2013-10-25', 'line' => 5, 'char' => 59,),
+        array('value' => '2013-10-26', 'line' => 6, 'char' => 34,),
+        array('value' => '2013-10-27', 'line' => 6, 'char' => 59,),
+        array('value' => '2013-11-01', 'line' => 10, 'char' => 44,),
+        array('value' => '2013-11-10','line' => 10, 'char' => 69,),
       ),
       $listener->positions
     );
@@ -79,16 +79,14 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
 
   public function testCountsLongLinesCorrectly()
   {
-    $longStream = fopen('php://memory', 'rw');
     $value = str_repeat('!', 10000);
-    fwrite($longStream, <<<JSON
+    $longStream = self::inMemoryStream(<<<JSON
 [
   "$value",
   "$value"
 ]
 JSON
     );
-    fseek($longStream, 0);
 
     $listener = new TestListener();
     $parser = new \JsonStreamingParser_Parser($longStream, $listener);
@@ -98,11 +96,28 @@ JSON
     unset($listener->positions[1]['value']);
 
     $this->assertSame(array(
-        array('line' => 2, 'char' => 10003,),
-        array('line' => 3, 'char' => 10003,),
+        array('line' => 2, 'char' => 10004,),
+        array('line' => 3, 'char' => 10004,),
       ),
       $listener->positions
     );
+  }
+
+  public function testThrowsParingError()
+  {
+    $listener = new TestListener();
+    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('{ invalid json }'), $listener);
+
+    $this->setExpectedException('JsonStreamingParser_ParsingError', 'Parsing error in [1:3]');
+    $parser->parse();
+  }
+
+  private static function inMemoryStream($content)
+  {
+    $stream = fopen('php://memory', 'rw');
+    fwrite($stream, $content);
+    fseek($stream, 0);
+    return $stream;
   }
 }
 
