@@ -14,6 +14,10 @@ class ArrayMaker implements JsonStreamingParser_Listener {
   private $_stack;
   private $_key;
 
+  public function file_position($line, $char) {
+
+  }
+
   public function get_json() {
     return $this->_json;
   }

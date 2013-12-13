@@ -13,6 +13,10 @@ abstract class SubsetConsumer implements \JsonStreamingParser_Listener
    */
   abstract protected function consume($data);
 
+  public function file_position($line, $char) {
+
+  }
+
   public function start_document()
   {
     $this->keyValueStack = array();
