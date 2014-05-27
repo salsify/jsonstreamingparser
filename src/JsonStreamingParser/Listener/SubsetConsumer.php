@@ -72,4 +72,8 @@ abstract class SubsetConsumer implements \JsonStreamingParser_Listener
     }
     array_push($this->keyValueStack, $keyValue);
   }
+
+  public function whitespace($whitespace) {
+    // noop
+  }
 }

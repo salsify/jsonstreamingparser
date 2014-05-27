@@ -17,4 +17,6 @@ interface JsonStreamingParser_Listener {
 
   // Note that value may be a string, integer, boolean, array, etc.
   public function value($value);
+
+  public function whitespace($whitespace);
 }

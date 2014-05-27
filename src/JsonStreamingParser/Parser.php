@@ -31,6 +31,7 @@ class JsonStreamingParser_Parser {
    * @var JsonStreamingParser_Listener
    */
   private $_listener;
+  private $_emit_whitespace;
 
   private $_buffer;
   private $_buffer_size;
@@ -42,7 +43,7 @@ class JsonStreamingParser_Parser {
   private $_char_number;
 
 
-  public function __construct($stream, $listener, $line_ending = "\n") {
+  public function __construct($stream, $listener, $line_ending = "\n", $emit_whitespace = false) {
     if (!is_resource($stream) || get_resource_type($stream) != 'stream') {
       throw new InvalidArgumentException("Argument is not a stream");
     }
@@ -52,6 +53,7 @@ class JsonStreamingParser_Parser {
 
     $this->_stream = $stream;
     $this->_listener = $listener;
+    $this->_emit_whitespace = $emit_whitespace;
 
     $this->_state = self::STATE_START_DOCUMENT;
     $this->_stack = array();
@@ -101,6 +103,11 @@ class JsonStreamingParser_Parser {
           $this->_state === self::STATE_START_ESCAPE ||
           $this->_state === self::STATE_IN_NUMBER ||
           $this->_state === self::STATE_START_DOCUMENT)) {
+      // we wrap this so that we don't make a ton of unnecessary function calls
+      // unless someone really, really cares about whitespace.
+      if ($this->_emit_whitespace) {
+        $this->_listener->whitespace($c);
+      }
       return;
     }
 

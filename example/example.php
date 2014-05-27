@@ -70,6 +70,10 @@ class ArrayMaker implements JsonStreamingParser_Listener {
     }
     array_push($this->_stack, $obj);
   }
+
+  public function whitespace($whitespace) {
+    // do nothing
+  }
 }
 
 $testfile = dirname(__FILE__).'/example.json';

@@ -180,6 +180,11 @@ class TestListener implements \JsonStreamingParser_Listener
     $this->positions[] = array('value' => $value, 'line' => $this->currentLine, 'char' => $this->currentChar);
   }
 
+  public function whitespace($whitespace)
+  {
+    // do nothing
+  }
+
   private static function stringify($value)
   {
     return strlen($value) ? $value : var_export($value, true);
