@@ -6,7 +6,6 @@ use JsonStreamingParser\Listener;
 
 class TestListener implements Listener
 {
-
     public $order = array();
 
     public $positions = array();
