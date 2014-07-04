@@ -1,5 +1,5 @@
 {
-    "name": "salsify/json-streaming-parser",
+    "name": "im0rtality/jsonstreamingparser",
     "description": "A streaming parser for JSON in PHP.",
     "keywords": ["json", "parser", "streaming"],
     "homepage": "https://github.com/salsify/jsonstreamingparser",
@@ -14,6 +14,10 @@
         {
             "name": "Maxim Gnatenko",
             "email": "mgnatenko@gmail.com"
+        },
+        {
+            "name": "Laurynas Veržukauskas",
+            "homepage": "http://github.com/Im0rtality/"
         }
     ],
     "require": {
