@@ -16,27 +16,27 @@ abstract class SubsetConsumer implements Listener
      */
     abstract protected function consume($data);
 
-    public function file_position($line, $char)
+    public function onFilePositionChanged($line, $char)
     {
 
     }
 
-    public function start_document()
+    public function onDocumentStart()
     {
         $this->keyValueStack = array();
     }
 
-    public function end_document()
+    public function onDocumentEnd()
     {
     }
 
-    public function start_object()
+    public function onObjectStart()
     {
         array_push($this->keyValueStack, is_null($this->key) ? array(array()) : array($this->key => array()));
         $this->key = null;
     }
 
-    public function end_object()
+    public function onObjectEnd()
     {
         $keyValue = array_pop($this->keyValueStack);
         $obj = reset($keyValue);
@@ -49,14 +49,14 @@ abstract class SubsetConsumer implements Listener
 
     }
 
-    public function start_array()
+    public function onArrayStart()
     {
-        $this->start_object();
+        $this->onObjectStart();
     }
 
-    public function end_array()
+    public function onArrayEnd()
     {
-        $this->end_object();
+        $this->onObjectEnd();
     }
 
     public function key($key)

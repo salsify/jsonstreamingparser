@@ -9,31 +9,31 @@ use JsonStreamingParser\Listener;
  */
 class IdleListener implements Listener
 {
-    public function file_position($line, $char)
+    public function onFilePositionChanged($line, $char)
     {
     }
 
-    public function start_document()
+    public function onDocumentStart()
     {
     }
 
-    public function end_document()
+    public function onDocumentEnd()
     {
     }
 
-    public function start_object()
+    public function onObjectStart()
     {
     }
 
-    public function end_object()
+    public function onObjectEnd()
     {
     }
 
-    public function start_array()
+    public function onArrayStart()
     {
     }
 
-    public function end_array()
+    public function onArrayEnd()
     {
     }
 

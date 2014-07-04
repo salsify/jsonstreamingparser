@@ -116,7 +116,7 @@ class Parser
         switch ($this->state) {
 
             case self::STATE_START_DOCUMENT:
-                $this->listener->start_document();
+                $this->listener->onDocumentStart();
                 if ($c === '[') {
                     $this->startArray();
                 } elseif ($c === '{') {
@@ -370,7 +370,7 @@ class Parser
 
     private function startArray()
     {
-        $this->listener->start_array();
+        $this->listener->onArrayStart();
         $this->state = self::STATE_IN_ARRAY;
         array_push($this->stack, self::STACK_ARRAY);
     }
@@ -385,7 +385,7 @@ class Parser
                 "Unexpected end of array encountered."
             );
         }
-        $this->listener->end_array();
+        $this->listener->onArrayEnd();
         $this->state = self::STATE_AFTER_VALUE;
 
         if (empty($this->stack)) {
@@ -396,7 +396,7 @@ class Parser
 
     private function startObject()
     {
-        $this->listener->start_object();
+        $this->listener->onObjectStart();
         $this->state = self::STATE_IN_OBJECT;
         array_push($this->stack, self::STACK_OBJECT);
     }
@@ -411,7 +411,7 @@ class Parser
                 "Unexpected end of object encountered."
             );
         }
-        $this->listener->end_object();
+        $this->listener->onObjectEnd();
         $this->state = self::STATE_AFTER_VALUE;
 
         if (empty($this->stack)) {
@@ -600,7 +600,7 @@ class Parser
 
     private function endDocument()
     {
-        $this->listener->end_document();
+        $this->listener->onDocumentEnd();
         $this->state = self::STATE_DONE;
     }
 }

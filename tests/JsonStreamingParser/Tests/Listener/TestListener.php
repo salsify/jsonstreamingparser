@@ -13,38 +13,38 @@ class TestListener implements Listener
     private $currentLine;
     private $currentChar;
 
-    public function file_position($line, $char)
+    public function onFilePositionChanged($line, $char)
     {
         $this->currentLine = $line;
         $this->currentChar = $char;
     }
 
-    public function start_document()
+    public function onDocumentStart()
     {
         $this->order[] = __FUNCTION__;
     }
 
-    public function end_document()
+    public function onDocumentEnd()
     {
         $this->order[] = __FUNCTION__;
     }
 
-    public function start_object()
+    public function onObjectStart()
     {
         $this->order[] = __FUNCTION__;
     }
 
-    public function end_object()
+    public function onObjectEnd()
     {
         $this->order[] = __FUNCTION__;
     }
 
-    public function start_array()
+    public function onArrayStart()
     {
         $this->order[] = __FUNCTION__;
     }
 
-    public function end_array()
+    public function onArrayEnd()
     {
         $this->order[] = __FUNCTION__;
     }
