@@ -1,8 +1,8 @@
 <?php
-require_once 'ParsingError.php';
-require_once 'Listener.php';
 
-class JsonStreamingParser_Parser
+namespace JsonStreamingParser;
+
+class Parser
 {
     private $_state;
     const STATE_START_DOCUMENT = 0;
@@ -29,7 +29,7 @@ class JsonStreamingParser_Parser
     private $_stream;
 
     /**
-     * @var JsonStreamingParser_Listener
+     * @var Listener
      */
     private $_listener;
     private $_emit_whitespace;
@@ -47,10 +47,10 @@ class JsonStreamingParser_Parser
     public function __construct($stream, $listener, $line_ending = "\n", $emit_whitespace = false)
     {
         if (!is_resource($stream) || get_resource_type($stream) != 'stream') {
-            throw new InvalidArgumentException("Argument is not a stream");
+            throw new \InvalidArgumentException("Argument is not a stream");
         }
-        if (!in_array("JsonStreamingParser_Listener", class_implements(get_class($listener)))) {
-            throw new InvalidArgumentException("Listener must implement JsonStreamingParser_Listener");
+        if (!in_array("Listener", class_implements(get_class($listener)))) {
+            throw new \InvalidArgumentException("Listener must implement Listener");
         }
 
         $this->_stream = $stream;
@@ -65,7 +65,7 @@ class JsonStreamingParser_Parser
         $this->_unicode_buffer = array();
         $this->_unicode_high_codepoint = -1;
         $this->_line_ending = $line_ending;
-      }
+    }
 
 
     public function parse()
@@ -94,7 +94,7 @@ class JsonStreamingParser_Parser
             }
 
         }
-      }
+    }
 
     private function _consume_char($c)
     {
@@ -125,8 +125,9 @@ class JsonStreamingParser_Parser
                 } elseif ($c === '{') {
                     $this->_start_object();
                 } else {
-                    throw new JsonStreamingParser_ParsingError(
-                        $this->_line_number, $this->_char_number,
+                    throw new ParsingError(
+                        $this->_line_number,
+                        $this->_char_number,
                         "Document must start with object or array."
                     );
                 }
@@ -146,8 +147,9 @@ class JsonStreamingParser_Parser
                 } elseif ($c === '"') {
                     $this->_start_key();
                 } else {
-                    throw new JsonStreamingParser_ParsingError(
-                        $this->_line_number, $this->_char_number,
+                    throw new ParsingError(
+                        $this->_line_number,
+                        $this->_char_number,
                         "Start of string expected for object key. Instead got: " . $c
                     );
                 }
@@ -155,8 +157,9 @@ class JsonStreamingParser_Parser
 
             case self::STATE_END_KEY:
                 if ($c !== ':') {
-                    throw new JsonStreamingParser_ParsingError(
-                        $this->_line_number, $this->_char_number,
+                    throw new ParsingError(
+                        $this->_line_number,
+                        $this->_char_number,
                         "Expected ':' after key."
                     );
                 }
@@ -173,8 +176,9 @@ class JsonStreamingParser_Parser
                 } elseif ($c === '\\') {
                     $this->_state = self::STATE_START_ESCAPE;
                 } elseif (($c < "\x1f") || ($c === "\x7f")) {
-                    throw new JsonStreamingParser_ParsingError(
-                        $this->_line_number, $this->_char_number,
+                    throw new ParsingError(
+                        $this->_line_number,
+                        $this->_char_number,
                         "Unescaped control character encountered: " . $c
                     );
                 } else {
@@ -198,8 +202,9 @@ class JsonStreamingParser_Parser
                     } elseif ($c === ',') {
                         $this->_state = self::STATE_IN_OBJECT;
                     } else {
-                        throw new JsonStreamingParser_ParsingError(
-                            $this->_line_number, $this->_char_number,
+                        throw new ParsingError(
+                            $this->_line_number,
+                            $this->_char_number,
                             "Expected ',' or '}' while parsing object. Got: " . $c
                         );
                     }
@@ -209,14 +214,16 @@ class JsonStreamingParser_Parser
                     } elseif ($c === ',') {
                         $this->_state = self::STATE_IN_ARRAY;
                     } else {
-                        throw new JsonStreamingParser_ParsingError(
-                            $this->_line_number, $this->_char_number,
+                        throw new ParsingError(
+                            $this->_line_number,
+                            $this->_char_number,
                             "Expected ',' or ']' while parsing array. Got: " . $c
                         );
                     }
                 } else {
-                    throw new JsonStreamingParser_ParsingError(
-                        $this->_line_number, $this->_char_number,
+                    throw new ParsingError(
+                        $this->_line_number,
+                        $this->_char_number,
                         "Finished a literal, but unclear what state to move to. Last state: " . $within
                     );
                 }
@@ -227,21 +234,24 @@ class JsonStreamingParser_Parser
                     $this->_buffer .= $c;
                 } elseif ($c === '.') {
                     if (strpos($this->_buffer, '.') !== false) {
-                        throw new JsonStreamingParser_ParsingError(
-                            $this->_line_number, $this->_char_number,
+                        throw new ParsingError(
+                            $this->_line_number,
+                            $this->_char_number,
                             "Cannot have multiple decimal points in a number."
                         );
                     } elseif (stripos($this->_buffer, 'e') !== false) {
-                        throw new JsonStreamingParser_ParsingError(
-                            $this->_line_number, $this->_char_number,
+                        throw new ParsingError(
+                            $this->_line_number,
+                            $this->_char_number,
                             "Cannot have a decimal point in an exponent."
                         );
                     }
                     $this->_buffer .= $c;
                 } elseif ($c === 'e' || $c === 'E') {
                     if (stripos($this->_buffer, 'e') !== false) {
-                        throw new JsonStreamingParser_ParsingError(
-                            $this->_line_number, $this->_char_number,
+                        throw new ParsingError(
+                            $this->_line_number,
+                            $this->_char_number,
                             "Cannot have multiple exponents in a number."
                         );
                     }
@@ -249,8 +259,9 @@ class JsonStreamingParser_Parser
                 } elseif ($c === '+' || $c === '-') {
                     $last = mb_substr($this->_buffer, -1);
                     if (!($last === 'e' || $last === 'E')) {
-                        throw new JsonStreamingParser_ParsingError(
-                            $this->_line_number, $this->_char_number,
+                        throw new ParsingError(
+                            $this->_line_number,
+                            $this->_char_number,
                             "Can only have '+' or '-' after the 'e' or 'E' in a number."
                         );
                     }
@@ -284,18 +295,20 @@ class JsonStreamingParser_Parser
                 break;
 
             case self::STATE_DONE:
-                throw new JsonStreamingParser_ParsingError(
-                    $this->_line_number, $this->_char_number,
+                throw new ParsingError(
+                    $this->_line_number,
+                    $this->_char_number,
                     "Expected end of document."
                 );
 
             default:
-                throw new JsonStreamingParser_ParsingError(
-                    $this->_line_number, $this->_char_number,
+                throw new ParsingError(
+                    $this->_line_number,
+                    $this->_char_number,
                     "Internal error. Reached an unknown state: " . $this->_state
                 );
         }
-      }
+    }
 
     private function _is_hex_character($c)
     {
@@ -332,9 +345,9 @@ class JsonStreamingParser_Parser
     private function _start_value($c)
     {
         if ($c === '[') {
-          $this->_start_array();
+            $this->_start_array();
         } elseif ($c === '{') {
-          $this->_start_object();
+            $this->_start_object();
         } elseif ($c === '"') {
             $this->_start_string();
         } elseif ($this->_is_digit($c)) {
@@ -349,9 +362,11 @@ class JsonStreamingParser_Parser
             $this->_state = self::STATE_IN_NULL;
             $this->_buffer .= $c;
         } else {
-          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-              "Unexpected character for value: " . $c
-          );
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
+                "Unexpected character for value: " . $c
+            );
         }
     }
 
@@ -367,8 +382,9 @@ class JsonStreamingParser_Parser
     {
         $popped = array_pop($this->_stack);
         if ($popped !== self::STACK_ARRAY) {
-            throw new JsonStreamingParser_ParsingError(
-                $this->_line_number, $this->_char_number,
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
                 "Unexpected end of array encountered."
             );
         }
@@ -392,9 +408,11 @@ class JsonStreamingParser_Parser
     {
         $popped = array_pop($this->_stack);
         if ($popped !== self::STACK_OBJECT) {
-          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-              "Unexpected end of object encountered."
-          );
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
+                "Unexpected end of object encountered."
+            );
         }
         $this->_listener->end_object();
         $this->_state = self::STATE_AFTER_VALUE;
@@ -426,9 +444,11 @@ class JsonStreamingParser_Parser
             $this->_listener->value($this->_buffer);
             $this->_state = self::STATE_AFTER_VALUE;
         } else {
-          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-              "Unexpected end of string."
-          );
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
+                "Unexpected end of string."
+            );
         }
         $this->_buffer = '';
     }
@@ -454,8 +474,9 @@ class JsonStreamingParser_Parser
         } elseif ($c === 'u') {
             $this->_state = self::STATE_UNICODE;
         } else {
-            throw new JsonStreamingParser_ParsingError(
-                $this->_line_number, $this->_char_number,
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
                 "Expected escaped character after backslash. Got: " . $c
             );
         }
@@ -468,11 +489,13 @@ class JsonStreamingParser_Parser
     private function _process_unicode_character($c)
     {
         if (!$this->_is_hex_character($c)) {
-          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-              "Expected hex character for escaped unicode character. Unicode parsed: " . implode(
-                  $this->_unicode_buffer
-              ) . " and got: " . $c
-          );
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
+                "Expected hex character for escaped unicode character. Unicode parsed: " . implode(
+                    $this->_unicode_buffer
+                ) . " and got: " . $c
+            );
         }
         array_push($this->_unicode_buffer, $c);
         if (count($this->_unicode_buffer) === 4) {
@@ -483,17 +506,19 @@ class JsonStreamingParser_Parser
                 $this->_unicode_buffer = array();
             } elseif ($codepoint >= 0xDC00 && $codepoint <= 0xDFFF) {
                 if ($this->_unicode_high_codepoint === -1) {
-                    throw new JsonStreamingParser_ParsingError(
-                        $this->_line_number, $this->_char_number,
+                    throw new ParsingError(
+                        $this->_line_number,
+                        $this->_char_number,
                         "Missing high codepoint for unicode low codepoint."
                     );
                 }
-                $combined_codepoint = (($this->_unicode_high_codepoint - 0xD800) * 0x400) + ($codepoint - 0xDC00) + 0x10000;
+                $combined_codepoint = (($this->_unicode_high_codepoint - 0xD800) * 0x400)
+                    + ($codepoint - 0xDC00) + 0x10000;
 
                 $this->_end_unicode_character($combined_codepoint);
             } else {
                 $this->_end_unicode_character($codepoint);
-          }
+            }
         }
     }
 
@@ -533,8 +558,9 @@ class JsonStreamingParser_Parser
         if ($true === 'true') {
             $this->_listener->value(true);
         } else {
-            throw new JsonStreamingParser_ParsingError(
-                $this->_line_number, $this->_char_number,
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
                 "Expected 'true'. Got: " . $true
             );
         }
@@ -548,8 +574,9 @@ class JsonStreamingParser_Parser
         if ($false === 'false') {
             $this->_listener->value(false);
         } else {
-            throw new JsonStreamingParser_ParsingError(
-                $this->_line_number, $this->_char_number,
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
                 "Expected 'false'. Got: " . $false
             );
         }
@@ -563,13 +590,15 @@ class JsonStreamingParser_Parser
         if ($null === 'null') {
             $this->_listener->value(null);
         } else {
-          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-              "Expected 'null'. Got: " . $null
-          );
+            throw new ParsingError(
+                $this->_line_number,
+                $this->_char_number,
+                "Expected 'null'. Got: " . $null
+            );
         }
         $this->_buffer = '';
         $this->_state = self::STATE_AFTER_VALUE;
-      }
+    }
 
 
     private function _end_document()
@@ -577,5 +606,4 @@ class JsonStreamingParser_Parser
         $this->_listener->end_document();
         $this->_state = self::STATE_DONE;
     }
-
-    }
+}

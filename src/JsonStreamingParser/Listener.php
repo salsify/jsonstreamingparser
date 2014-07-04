@@ -1,8 +1,9 @@
 <?php
 
-interface JsonStreamingParser_Listener
-{
+namespace JsonStreamingParser;
 
+interface Listener
+{
     public function file_position($line, $char);
 
     public function start_document();

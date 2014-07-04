@@ -2,7 +2,7 @@
 
 namespace JsonStreamingParser\Listener;
 
-abstract class SubsetConsumer implements \JsonStreamingParser_Listener
+abstract class SubsetConsumer implements Listener
 {
     private $keyValueStack;
     private $key;
@@ -79,4 +79,4 @@ abstract class SubsetConsumer implements \JsonStreamingParser_Listener
     {
         // noop
     }
-    }
+}

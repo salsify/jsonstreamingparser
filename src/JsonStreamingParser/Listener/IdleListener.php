@@ -5,7 +5,7 @@ namespace JsonStreamingParser\Listener;
 /**
  * Base listener which does nothing
  */
-class IdleListener implements \JsonStreamingParser_Listener
+class IdleListener implements Listener
 {
     public function file_position($line, $char)
     {

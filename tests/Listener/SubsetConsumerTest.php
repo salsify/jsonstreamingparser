@@ -1,13 +1,15 @@
 <?php
 
-namespace JsonStreamingParser\Listener;
+namespace JsonStreamingParser\Tests\Listener;
+
+use JsonStreamingParser\Parser;
 
 class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
 {
     public function testProposesAJsonSubsetToConsume()
     {
         $listener = new DatesRangeConsumer;
-        $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/data/dateRanges.json', 'r'), $listener);
+        $parser = new Parser(fopen(__DIR__ . '/data/dateRanges.json', 'r'), $listener);
         $parser->parse();
 
         $this->assertSame(
@@ -32,7 +34,7 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
     public function testConsumesFirstLevelCorrectly()
     {
         $listener = new IdealConsumer;
-        $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/data/plain.json', 'r'), $listener);
+        $parser = new Parser(fopen(__DIR__ . '/data/plain.json', 'r'), $listener);
         $parser->parse();
 
         $this->assertEquals(
@@ -47,7 +49,7 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
     public function testCollectsStructureCorrectly($fileToProcess)
     {
         $listener = new IdealConsumer;
-        $parser = new \JsonStreamingParser_Parser(fopen($fileToProcess, 'r'), $listener);
+        $parser = new Parser(fopen($fileToProcess, 'r'), $listener);
         $parser->parse();
 
         $this->assertEquals(
@@ -65,48 +67,5 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
             array(__DIR__ . '/data/dateRanges.json'),
             array(__DIR__ . '/data/escapedChars.json'),
         );
-    }
-    }
-
-//======================================================================================================================
-
-class DatesRangeConsumer extends SubsetConsumer
-{
-
-    public $dateRanges = array();
-
-    /**
-     * @param mixed $data
-     *
-     * @return boolean if data was consumed
-     */
-    protected function consume($data)
-    {
-        if (is_array($data) && array_key_exists('startDate', $data) && array_key_exists('endDate', $data)) {
-            $this->dateRanges[] = $data;
-            return true;
-        }
-        return false;
-    }
-}
-
-//======================================================================================================================
-
-class IdealConsumer extends SubsetConsumer
-{
-
-    public $data = array();
-
-    /**
-     * Consumes anything
-     *
-     * @param mixed $data
-     *
-     * @return boolean if data was consumed and can be discarded
-     */
-    protected function consume($data)
-    {
-        $this->data = $data;
-        return false;
     }
 }

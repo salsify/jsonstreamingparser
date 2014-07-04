@@ -1,13 +1,16 @@
 <?php
 
-namespace JsonStreamingParser;
+namespace JsonStreamingParser\Tests;
+
+use JsonStreamingParser\Parser;
+use JsonStreamingParser\Tests\Listener\TestListener;
 
 class FunctionalTest extends \PHPUnit_Framework_TestCase
 {
     public function testTraverseOrder()
     {
         $listener = new TestListener();
-        $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $listener);
+        $parser = new Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $listener);
         $parser->parse();
 
         $this->assertSame(
@@ -61,7 +64,7 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     public function testListenerGetsNotifiedAboutPositionInFileOfDataRead()
     {
         $listener = new TestListener();
-        $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/Listener/data/dateRanges.json', 'r'), $listener);
+        $parser = new Parser(fopen(__DIR__ . '/Listener/data/dateRanges.json', 'r'), $listener);
         $parser->parse();
 
         $this->assertSame(
@@ -90,7 +93,7 @@ JSON
         );
 
         $listener = new TestListener();
-        $parser = new \JsonStreamingParser_Parser($longStream, $listener);
+        $parser = new Parser($longStream, $listener);
         $parser->parse();
 
         unset($listener->positions[0]['value']);
@@ -108,9 +111,9 @@ JSON
     public function testThrowsParingError()
     {
         $listener = new TestListener();
-        $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('{ invalid json }'), $listener);
+        $parser = new Parser(self::inMemoryStream('{ invalid json }'), $listener);
 
-        $this->setExpectedException('JsonStreamingParser_ParsingError', 'Parsing error in [1:3]');
+        $this->setExpectedException('JsonStreamingParser\ParsingError', 'Parsing error in [1:3]');
         $parser->parse();
     }
 
@@ -120,75 +123,5 @@ JSON
         fwrite($stream, $content);
         fseek($stream, 0);
         return $stream;
-    }
-}
-
-//======================================================================================================================
-
-class TestListener implements \JsonStreamingParser_Listener
-{
-
-    public $order = array();
-
-    public $positions = array();
-
-    private $currentLine;
-    private $currentChar;
-
-    public function file_position($line, $char)
-    {
-        $this->currentLine = $line;
-        $this->currentChar = $char;
-    }
-
-    public function start_document()
-    {
-        $this->order[] = __FUNCTION__;
-    }
-
-    public function end_document()
-    {
-        $this->order[] = __FUNCTION__;
-    }
-
-    public function start_object()
-    {
-        $this->order[] = __FUNCTION__;
-    }
-
-    public function end_object()
-    {
-        $this->order[] = __FUNCTION__;
-    }
-
-    public function start_array()
-    {
-        $this->order[] = __FUNCTION__;
-    }
-
-    public function end_array()
-    {
-        $this->order[] = __FUNCTION__;
-    }
-
-    public function key($key)
-    {
-        $this->order[] = __FUNCTION__ . ' = ' . self::stringify($key);
-    }
-
-    public function value($value)
-    {
-        $this->order[] = __FUNCTION__ . ' = ' . self::stringify($value);
-        $this->positions[] = array('value' => $value, 'line' => $this->currentLine, 'char' => $this->currentChar);
-    }
-
-    public function whitespace($whitespace)
-    {
-        // do nothing
-    }
-
-    private static function stringify($value)
-    {
-        return strlen($value) ? $value : var_export($value, true);
     }
 }

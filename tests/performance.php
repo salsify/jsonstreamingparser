@@ -1,6 +1,7 @@
 <?php
 
 use JsonStreamingParser\Listener\SubsetConsumer;
+use JsonStreamingParser\Parser;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -23,7 +24,7 @@ $expected = json_decode(file_get_contents(__DIR__ . '/Listener/data/ratherBig.js
 assert($expected);
 
 $consumer = new Consumer;
-$parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/Listener/data/ratherBig.json', 'r'), $consumer);
+$parser = new Parser(fopen(__DIR__ . '/Listener/data/ratherBig.json', 'r'), $consumer);
 
 $time = microtime(true);
 $parser->parse();
