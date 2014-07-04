@@ -6,13 +6,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 class Consumer extends SubsetConsumer
 {
-  public $data;
+    public $data;
 
-  protected function consume($data)
-  {
-    $this->data = $data;
-    return false;
-  }
+    protected function consume($data)
+    {
+        $this->data = $data;
+        return false;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/Listener/data/rather
 $time = microtime(true);
 $parser->parse();
 echo "JSON size: " . stat(__DIR__ . '/Listener/data/ratherBig.json')['size'] . " bytes,
-Time: " . (microtime(true) - $time) . " sec.\n\n";
+    Time: " . (microtime(true) - $time) . " sec.\n\n";
 
 
 assert($expected == $consumer->data);
