@@ -1,25 +1,32 @@
 [![Build Status](https://travis-ci.org/Im0rtality/jsonstreamingparser.svg?branch=master)](https://travis-ci.org/Im0rtality/jsonstreamingparser)
 
-php-streaming-json-parser
-=========================
+Not invented here
+=================
 
-This is a simple, streaming parser for processing large JSON documents. Use it for parsing very large JSON documents to avoid loading the entire thing into memory, which is how just about every other JSON parser for PHP works.
+Code forked from https://github.com/salsify/jsonstreamingparser and some fixed added:
 
-For more details, I've written up a longer explanation of the [JSON streaming parser](http://www.salsify.com/blog/json-streaming-parser-for-php/1056) that talks about pros and cons vs. the standard PHP JSON parser.
+ - Removed file_position callback from listener (we did not need it and it gave significant performance boost)
+ - PSR2
 
-If you've ever used a [SAX parser](http://en.wikipedia.org/wiki/Simple_API_for_XML) for XML (or even JSON) in another language, that's what this is. Except for JSON in PHP.
+Features
+--------
+ - Stream based - low memory footprint does not grow with file size
+ - Similar to [SAX parser](http://en.wikipedia.org/wiki/Simple_API_for_XML)
 
+Known drawbacks
+---------------
+ - Performance is not as good as it should be (throughput - ~1MB per 9 secs, VirtualBox, Debian 7 on 4.3GHz CPU, single core)
 
 Usage
 -----
 
-To use the `JsonStreamingParser` you just have to implement the `\JsonStreamingParser\Listener` interface. You then pass your `Listener` into the parser. For example:
+To use the `JsonStreamingParser` you just have to implement the `JsonStreamingParser\Listener` interface. You then pass your `Listener` into the parser. For example:
 
 ```php
 $stream = fopen('doc.json', 'r');
 $listener = new YourListener();
 try {
-  $parser = new JsonStreamingParser_Parser($stream, $listener);
+  $parser = new Parser($stream, $listener);
   $parser->parse();
 } catch (Exception $e) {
   fclose($stream);
@@ -29,10 +36,7 @@ try {
 
 That's it! Your `Listener` will receive events from the streaming parser as it works.
 
-There is a complete example of this in `example/example.php`.
-
-
 License
 -------
 
-[MIT License](http://mit-license.org/) (c) Salsify, Inc.
+MIT License
