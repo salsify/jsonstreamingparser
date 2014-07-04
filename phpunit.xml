@@ -6,10 +6,15 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="true"
+         stopOnFailure="false"
          syntaxCheck="true"
-         bootstrap="./vendor/autoload.php"
->
+         bootstrap="./tests/bootstrap.php">
+    <filter>
+        <whitelist>
+            <directory>./src/JsonStreamingParser/</directory>
+        </whitelist>
+    </filter>
+
     <testsuites>
         <testsuite name="All">
             <directory>./tests</directory>

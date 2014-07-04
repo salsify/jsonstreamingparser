@@ -2,6 +2,8 @@
 
 namespace JsonStreamingParser\Listener;
 
+use JsonStreamingParser\Listener;
+
 /**
  * Base listener which does nothing
  */

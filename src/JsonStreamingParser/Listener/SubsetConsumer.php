@@ -2,6 +2,8 @@
 
 namespace JsonStreamingParser\Listener;
 
+use JsonStreamingParser\Listener;
+
 abstract class SubsetConsumer implements Listener
 {
     private $keyValueStack;
