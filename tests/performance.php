@@ -1,22 +1,10 @@
 <?php
 
-use JsonStreamingParser\Listener\SubsetConsumer;
 use JsonStreamingParser\Parser;
+use JsonStreamingParser\Tests\Listener\Consumer;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/bootstrap.php';
 
-class Consumer extends SubsetConsumer
-{
-    public $data;
-
-    protected function consume($data)
-    {
-        $this->data = $data;
-        return false;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 mb_regex_encoding('UTF-8');
 mb_internal_encoding("UTF-8");
 

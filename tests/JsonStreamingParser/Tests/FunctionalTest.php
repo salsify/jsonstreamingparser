@@ -10,7 +10,7 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     public function testTraverseOrder()
     {
         $listener = new TestListener();
-        $parser = new Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $listener);
+        $parser = new Parser(fopen(__DIR__ . '/example/example.json', 'r'), $listener);
         $parser->parse();
 
         $this->assertSame(
@@ -85,10 +85,10 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $value = str_repeat('!', 10000);
         $longStream = self::inMemoryStream(
             <<<JSON
-                [
-      "$value",
-      "$value"
-    ]
+[
+  "$value",
+  "$value"
+]
 JSON
         );
 

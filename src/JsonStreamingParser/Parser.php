@@ -44,13 +44,10 @@ class Parser
     private $_char_number;
 
 
-    public function __construct($stream, $listener, $line_ending = "\n", $emit_whitespace = false)
+    public function __construct($stream, Listener $listener, $line_ending = "\n", $emit_whitespace = false)
     {
         if (!is_resource($stream) || get_resource_type($stream) != 'stream') {
             throw new \InvalidArgumentException("Argument is not a stream");
-        }
-        if (!in_array("Listener", class_implements(get_class($listener)))) {
-            throw new \InvalidArgumentException("Listener must implement Listener");
         }
 
         $this->_stream = $stream;
