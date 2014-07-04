@@ -4,7 +4,7 @@ namespace JsonStreamingParser;
 
 class Parser
 {
-    private $_state;
+    private $state;
     const STATE_START_DOCUMENT = 0;
     const STATE_DONE = -1;
     const STATE_IN_ARRAY = 1;
@@ -24,24 +24,24 @@ class Parser
     const STACK_ARRAY = 1;
     const STACK_KEY = 2;
     const STACK_STRING = 3;
-    private $_stack;
+    private $stack;
 
-    private $_stream;
+    private $stream;
 
     /**
      * @var Listener
      */
-    private $_listener;
-    private $_emit_whitespace;
+    private $listener;
+    private $emitWhitespace;
 
-    private $_buffer;
-    private $_buffer_size;
-    private $_unicode_buffer;
-    private $_unicode_high_codepoint;
-    private $_line_ending;
+    private $buffer;
+    private $bufferSize;
+    private $unicodeBuffer;
+    private $unicodeHighCodepoint;
+    private $lineEnding;
 
-    private $_line_number;
-    private $_char_number;
+    private $lineNumber;
+    private $charNumber;
 
 
     public function __construct($stream, Listener $listener, $line_ending = "\n", $emit_whitespace = false)
@@ -50,81 +50,81 @@ class Parser
             throw new \InvalidArgumentException("Argument is not a stream");
         }
 
-        $this->_stream = $stream;
-        $this->_listener = $listener;
-        $this->_emit_whitespace = $emit_whitespace;
+        $this->stream = $stream;
+        $this->listener = $listener;
+        $this->emitWhitespace = $emit_whitespace;
 
-        $this->_state = self::STATE_START_DOCUMENT;
-        $this->_stack = array();
+        $this->state = self::STATE_START_DOCUMENT;
+        $this->stack = array();
 
-        $this->_buffer = '';
-        $this->_buffer_size = 8192;
-        $this->_unicode_buffer = array();
-        $this->_unicode_high_codepoint = -1;
-        $this->_line_ending = $line_ending;
+        $this->buffer = '';
+        $this->bufferSize = 8192;
+        $this->unicodeBuffer = array();
+        $this->unicodeHighCodepoint = -1;
+        $this->lineEnding = $line_ending;
     }
 
 
     public function parse()
     {
-        $this->_line_number = 1;
-        $this->_char_number = 1;
+        $this->lineNumber = 1;
+        $this->charNumber = 1;
         $eof = false;
 
-        while (!feof($this->_stream) && !$eof) {
-            $pos = ftell($this->_stream);
-            $line = stream_get_line($this->_stream, $this->_buffer_size, $this->_line_ending);
-            $ended = (bool) (ftell($this->_stream) - strlen($line) - $pos);
+        while (!feof($this->stream) && !$eof) {
+            $pos = ftell($this->stream);
+            $line = stream_get_line($this->stream, $this->bufferSize, $this->lineEnding);
+            $ended = (bool) (ftell($this->stream) - strlen($line) - $pos);
             // if we're still at the same place after stream_get_line, we're done
-            $eof = ftell($this->_stream) == $pos;
+            $eof = ftell($this->stream) == $pos;
 
             $byteLen = strlen($line);
             for ($i = 0; $i < $byteLen; $i++) {
-                // $this->_listener->file_position($this->_line_number, $this->_char_number);
-                $this->_consume_char($line[$i]);
-                $this->_char_number++;
+                // $this->listener->file_position($this->lineNumber, $this->charNumber);
+                $this->consumeChar($line[$i]);
+                $this->charNumber++;
             }
 
             if ($ended) {
-                $this->_line_number++;
-                $this->_char_number = 1;
+                $this->lineNumber++;
+                $this->charNumber = 1;
             }
 
         }
     }
 
-    private function _consume_char($c)
+    private function consumeChar($c)
     {
         // valid whitespace characters in JSON (from RFC4627 for JSON) include:
         // space, horizontal tab, line feed or new line, and carriage return.
         // thanks: http://stackoverflow.com/questions/16042274/definition-of-whitespace-in-json
         if (($c === " " || $c === "\t" || $c === "\n" || $c === "\r") &&
-            !($this->_state === self::STATE_IN_STRING ||
-                $this->_state === self::STATE_UNICODE ||
-                $this->_state === self::STATE_START_ESCAPE ||
-                $this->_state === self::STATE_IN_NUMBER ||
-                $this->_state === self::STATE_START_DOCUMENT)
+            !($this->state === self::STATE_IN_STRING ||
+                $this->state === self::STATE_UNICODE ||
+                $this->state === self::STATE_START_ESCAPE ||
+                $this->state === self::STATE_IN_NUMBER ||
+                $this->state === self::STATE_START_DOCUMENT)
         ) {
             // we wrap this so that we don't make a ton of unnecessary function calls
             // unless someone really, really cares about whitespace.
-            if ($this->_emit_whitespace) {
-                $this->_listener->whitespace($c);
+            if ($this->emitWhitespace) {
+                $this->listener->whitespace($c);
             }
             return;
         }
 
-        switch ($this->_state) {
+        switch ($this->state) {
 
             case self::STATE_START_DOCUMENT:
-                $this->_listener->start_document();
+                $this->listener->start_document();
                 if ($c === '[') {
-                    $this->_start_array();
+                    $this->startArray();
                 } elseif ($c === '{') {
-                    $this->_start_object();
+                    $this->startObject();
                 } else {
                     throw new ParsingError(
-                        $this->_line_number,
-                        $this->_char_number,
+                        $this->lineNumber,
+                        $this->charNumber,
                         "Document must start with object or array."
                     );
                 }
@@ -132,21 +132,21 @@ class Parser
 
             case self::STATE_IN_ARRAY:
                 if ($c === ']') {
-                    $this->_end_array();
+                    $this->endArray();
                 } else {
-                    $this->_start_value($c);
+                    $this->startValue($c);
                 }
                 break;
 
             case self::STATE_IN_OBJECT:
                 if ($c === '}') {
-                    $this->_end_object();
+                    $this->endObject();
                 } elseif ($c === '"') {
-                    $this->_start_key();
+                    $this->startKey();
                 } else {
                     throw new ParsingError(
-                        $this->_line_number,
-                        $this->_char_number,
+                        $this->lineNumber,
+                        $this->charNumber,
                         "Start of string expected for object key. Instead got: " . $c
                     );
                 }
@@ -155,72 +155,72 @@ class Parser
             case self::STATE_END_KEY:
                 if ($c !== ':') {
                     throw new ParsingError(
-                        $this->_line_number,
-                        $this->_char_number,
+                        $this->lineNumber,
+                        $this->charNumber,
                         "Expected ':' after key."
                     );
                 }
-                $this->_state = self::STATE_AFTER_KEY;
+                $this->state = self::STATE_AFTER_KEY;
                 break;
 
             case self::STATE_AFTER_KEY:
-                $this->_start_value($c);
+                $this->startValue($c);
                 break;
 
             case self::STATE_IN_STRING:
                 if ($c === '"') {
-                    $this->_end_string();
+                    $this->endString();
                 } elseif ($c === '\\') {
-                    $this->_state = self::STATE_START_ESCAPE;
+                    $this->state = self::STATE_START_ESCAPE;
                 } elseif (($c < "\x1f") || ($c === "\x7f")) {
                     throw new ParsingError(
-                        $this->_line_number,
-                        $this->_char_number,
+                        $this->lineNumber,
+                        $this->charNumber,
                         "Unescaped control character encountered: " . $c
                     );
                 } else {
-                    $this->_buffer .= $c;
+                    $this->buffer .= $c;
                 }
                 break;
 
             case self::STATE_START_ESCAPE:
-                $this->_process_escape_character($c);
+                $this->processEscapeCharacter($c);
                 break;
 
             case self::STATE_UNICODE:
-                $this->_process_unicode_character($c);
+                $this->processUnicodeCharacter($c);
                 break;
 
             case self::STATE_AFTER_VALUE:
-                $within = end($this->_stack);
+                $within = end($this->stack);
                 if ($within === self::STACK_OBJECT) {
                     if ($c === '}') {
-                        $this->_end_object();
+                        $this->endObject();
                     } elseif ($c === ',') {
-                        $this->_state = self::STATE_IN_OBJECT;
+                        $this->state = self::STATE_IN_OBJECT;
                     } else {
                         throw new ParsingError(
-                            $this->_line_number,
-                            $this->_char_number,
+                            $this->lineNumber,
+                            $this->charNumber,
                             "Expected ',' or '}' while parsing object. Got: " . $c
                         );
                     }
                 } elseif ($within === self::STACK_ARRAY) {
                     if ($c === ']') {
-                        $this->_end_array();
+                        $this->endArray();
                     } elseif ($c === ',') {
-                        $this->_state = self::STATE_IN_ARRAY;
+                        $this->state = self::STATE_IN_ARRAY;
                     } else {
                         throw new ParsingError(
-                            $this->_line_number,
-                            $this->_char_number,
+                            $this->lineNumber,
+                            $this->charNumber,
                             "Expected ',' or ']' while parsing array. Got: " . $c
                         );
                     }
                 } else {
                     throw new ParsingError(
-                        $this->_line_number,
-                        $this->_char_number,
+                        $this->lineNumber,
+                        $this->charNumber,
                         "Finished a literal, but unclear what state to move to. Last state: " . $within
                     );
                 }
@@ -228,92 +228,92 @@ class Parser
 
             case self::STATE_IN_NUMBER:
                 if (preg_match('/\d/', $c)) {
-                    $this->_buffer .= $c;
+                    $this->buffer .= $c;
                 } elseif ($c === '.') {
-                    if (strpos($this->_buffer, '.') !== false) {
+                    if (strpos($this->buffer, '.') !== false) {
                         throw new ParsingError(
-                            $this->_line_number,
-                            $this->_char_number,
+                            $this->lineNumber,
+                            $this->charNumber,
                             "Cannot have multiple decimal points in a number."
                         );
-                    } elseif (stripos($this->_buffer, 'e') !== false) {
+                    } elseif (stripos($this->buffer, 'e') !== false) {
                         throw new ParsingError(
-                            $this->_line_number,
-                            $this->_char_number,
+                            $this->lineNumber,
+                            $this->charNumber,
                             "Cannot have a decimal point in an exponent."
                         );
                     }
-                    $this->_buffer .= $c;
+                    $this->buffer .= $c;
                 } elseif ($c === 'e' || $c === 'E') {
-                    if (stripos($this->_buffer, 'e') !== false) {
+                    if (stripos($this->buffer, 'e') !== false) {
                         throw new ParsingError(
-                            $this->_line_number,
-                            $this->_char_number,
+                            $this->lineNumber,
+                            $this->charNumber,
                             "Cannot have multiple exponents in a number."
                         );
                     }
-                    $this->_buffer .= $c;
+                    $this->buffer .= $c;
                 } elseif ($c === '+' || $c === '-') {
-                    $last = mb_substr($this->_buffer, -1);
+                    $last = mb_substr($this->buffer, -1);
                     if (!($last === 'e' || $last === 'E')) {
                         throw new ParsingError(
-                            $this->_line_number,
-                            $this->_char_number,
+                            $this->lineNumber,
+                            $this->charNumber,
                             "Can only have '+' or '-' after the 'e' or 'E' in a number."
                         );
                     }
-                    $this->_buffer .= $c;
+                    $this->buffer .= $c;
                 } else {
-                    $this->_end_number();
+                    $this->endNumber();
                     // we have consumed one beyond the end of the number
-                    $this->_consume_char($c);
+                    $this->consumeChar($c);
                 }
                 break;
 
             case self::STATE_IN_TRUE:
-                $this->_buffer .= $c;
-                if (mb_strlen($this->_buffer) === 4) {
-                    $this->_end_true();
+                $this->buffer .= $c;
+                if (mb_strlen($this->buffer) === 4) {
+                    $this->endTrue();
                 }
                 break;
 
             case self::STATE_IN_FALSE:
-                $this->_buffer .= $c;
-                if (mb_strlen($this->_buffer) === 5) {
-                    $this->_end_false();
+                $this->buffer .= $c;
+                if (mb_strlen($this->buffer) === 5) {
+                    $this->endFalse();
                 }
                 break;
 
             case self::STATE_IN_NULL:
-                $this->_buffer .= $c;
-                if (mb_strlen($this->_buffer) === 4) {
-                    $this->_end_null();
+                $this->buffer .= $c;
+                if (mb_strlen($this->buffer) === 4) {
+                    $this->endNull();
                 }
                 break;
 
             case self::STATE_DONE:
                 throw new ParsingError(
-                    $this->_line_number,
-                    $this->_char_number,
+                    $this->lineNumber,
+                    $this->charNumber,
                     "Expected end of document."
                 );
 
             default:
                 throw new ParsingError(
-                    $this->_line_number,
-                    $this->_char_number,
-                    "Internal error. Reached an unknown state: " . $this->_state
+                    $this->lineNumber,
+                    $this->charNumber,
+                    "Internal error. Reached an unknown state: " . $this->state
                 );
         }
     }
 
-    private function _is_hex_character($c)
+    private function isHexCharacter($c)
     {
         return preg_match('/[0-9a-fA-F]/u', $c);
     }
 
     // Thanks: http://stackoverflow.com/questions/1805802/php-convert-unicode-codepoint-to-utf-8
-    private function _convert_codepoint_to_character($num)
+    private function convertCodepointToCharacter($num)
     {
         if ($num <= 0x7F) {
             return chr($num);
@@ -332,275 +332,275 @@ class Parser
         return '';
     }
 
-    private function _is_digit($c)
+    private function isDigit($c)
     {
         // Only concerned with the first character in a number.
         return preg_match('/[0-9]|-/u', $c);
     }
 
 
-    private function _start_value($c)
+    private function startValue($c)
     {
         if ($c === '[') {
-            $this->_start_array();
+            $this->startArray();
         } elseif ($c === '{') {
-            $this->_start_object();
+            $this->startObject();
         } elseif ($c === '"') {
-            $this->_start_string();
-        } elseif ($this->_is_digit($c)) {
-            $this->_start_number($c);
+            $this->startString();
+        } elseif ($this->isDigit($c)) {
+            $this->startNumber($c);
         } elseif ($c === 't') {
-            $this->_state = self::STATE_IN_TRUE;
-            $this->_buffer .= $c;
+            $this->state = self::STATE_IN_TRUE;
+            $this->buffer .= $c;
         } elseif ($c === 'f') {
-            $this->_state = self::STATE_IN_FALSE;
-            $this->_buffer .= $c;
+            $this->state = self::STATE_IN_FALSE;
+            $this->buffer .= $c;
         } elseif ($c === 'n') {
-            $this->_state = self::STATE_IN_NULL;
-            $this->_buffer .= $c;
+            $this->state = self::STATE_IN_NULL;
+            $this->buffer .= $c;
         } else {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Unexpected character for value: " . $c
             );
         }
     }
 
 
-    private function _start_array()
+    private function startArray()
     {
-        $this->_listener->start_array();
-        $this->_state = self::STATE_IN_ARRAY;
-        array_push($this->_stack, self::STACK_ARRAY);
+        $this->listener->start_array();
+        $this->state = self::STATE_IN_ARRAY;
+        array_push($this->stack, self::STACK_ARRAY);
     }
 
-    private function _end_array()
+    private function endArray()
     {
-        $popped = array_pop($this->_stack);
+        $popped = array_pop($this->stack);
         if ($popped !== self::STACK_ARRAY) {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Unexpected end of array encountered."
             );
         }
-        $this->_listener->end_array();
-        $this->_state = self::STATE_AFTER_VALUE;
+        $this->listener->end_array();
+        $this->state = self::STATE_AFTER_VALUE;
 
-        if (empty($this->_stack)) {
-            $this->_end_document();
+        if (empty($this->stack)) {
+            $this->endDocument();
         }
     }
 
 
-    private function _start_object()
+    private function startObject()
     {
-        $this->_listener->start_object();
-        $this->_state = self::STATE_IN_OBJECT;
-        array_push($this->_stack, self::STACK_OBJECT);
+        $this->listener->start_object();
+        $this->state = self::STATE_IN_OBJECT;
+        array_push($this->stack, self::STACK_OBJECT);
     }
 
-    private function _end_object()
+    private function endObject()
     {
-        $popped = array_pop($this->_stack);
+        $popped = array_pop($this->stack);
         if ($popped !== self::STACK_OBJECT) {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Unexpected end of object encountered."
             );
         }
-        $this->_listener->end_object();
-        $this->_state = self::STATE_AFTER_VALUE;
+        $this->listener->end_object();
+        $this->state = self::STATE_AFTER_VALUE;
 
-        if (empty($this->_stack)) {
-            $this->_end_document();
+        if (empty($this->stack)) {
+            $this->endDocument();
         }
     }
 
-    private function _start_string()
+    private function startString()
     {
-        array_push($this->_stack, self::STACK_STRING);
-        $this->_state = self::STATE_IN_STRING;
+        array_push($this->stack, self::STACK_STRING);
+        $this->state = self::STATE_IN_STRING;
     }
 
-    private function _start_key()
+    private function startKey()
     {
-        array_push($this->_stack, self::STACK_KEY);
-        $this->_state = self::STATE_IN_STRING;
+        array_push($this->stack, self::STACK_KEY);
+        $this->state = self::STATE_IN_STRING;
     }
 
-    private function _end_string()
+    private function endString()
     {
-        $popped = array_pop($this->_stack);
+        $popped = array_pop($this->stack);
         if ($popped === self::STACK_KEY) {
-            $this->_listener->key($this->_buffer);
-            $this->_state = self::STATE_END_KEY;
+            $this->listener->key($this->buffer);
+            $this->state = self::STATE_END_KEY;
         } elseif ($popped === self::STACK_STRING) {
-            $this->_listener->value($this->_buffer);
-            $this->_state = self::STATE_AFTER_VALUE;
+            $this->listener->value($this->buffer);
+            $this->state = self::STATE_AFTER_VALUE;
         } else {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Unexpected end of string."
             );
         }
-        $this->_buffer = '';
+        $this->buffer = '';
     }
 
-    private function _process_escape_character($c)
+    private function processEscapeCharacter($c)
     {
         if ($c === '"') {
-            $this->_buffer .= '"';
+            $this->buffer .= '"';
         } elseif ($c === '\\') {
-            $this->_buffer .= '\\';
+            $this->buffer .= '\\';
         } elseif ($c === '/') {
-            $this->_buffer .= '/';
+            $this->buffer .= '/';
         } elseif ($c === 'b') {
-            $this->_buffer .= "\x08";
+            $this->buffer .= "\x08";
         } elseif ($c === 'f') {
-            $this->_buffer .= "\f";
+            $this->buffer .= "\f";
         } elseif ($c === 'n') {
-            $this->_buffer .= "\n";
+            $this->buffer .= "\n";
         } elseif ($c === 'r') {
-            $this->_buffer .= "\r";
+            $this->buffer .= "\r";
         } elseif ($c === 't') {
-            $this->_buffer .= "\t";
+            $this->buffer .= "\t";
         } elseif ($c === 'u') {
-            $this->_state = self::STATE_UNICODE;
+            $this->state = self::STATE_UNICODE;
         } else {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Expected escaped character after backslash. Got: " . $c
             );
         }
 
-        if ($this->_state !== self::STATE_UNICODE) {
-            $this->_state = self::STATE_IN_STRING;
+        if ($this->state !== self::STATE_UNICODE) {
+            $this->state = self::STATE_IN_STRING;
         }
     }
 
-    private function _process_unicode_character($c)
+    private function processUnicodeCharacter($c)
     {
-        if (!$this->_is_hex_character($c)) {
+        if (!$this->isHexCharacter($c)) {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Expected hex character for escaped unicode character. Unicode parsed: " . implode(
-                    $this->_unicode_buffer
+                    $this->unicodeBuffer
                 ) . " and got: " . $c
             );
         }
-        array_push($this->_unicode_buffer, $c);
-        if (count($this->_unicode_buffer) === 4) {
-            $codepoint = hexdec(implode($this->_unicode_buffer));
+        array_push($this->unicodeBuffer, $c);
+        if (count($this->unicodeBuffer) === 4) {
+            $codepoint = hexdec(implode($this->unicodeBuffer));
 
             if ($codepoint >= 0xD800 && $codepoint < 0xDC00) {
-                $this->_unicode_high_codepoint = $codepoint;
-                $this->_unicode_buffer = array();
+                $this->unicodeHighCodepoint = $codepoint;
+                $this->unicodeBuffer = array();
             } elseif ($codepoint >= 0xDC00 && $codepoint <= 0xDFFF) {
-                if ($this->_unicode_high_codepoint === -1) {
+                if ($this->unicodeHighCodepoint === -1) {
                     throw new ParsingError(
-                        $this->_line_number,
-                        $this->_char_number,
+                        $this->lineNumber,
+                        $this->charNumber,
                         "Missing high codepoint for unicode low codepoint."
                     );
                 }
-                $combined_codepoint = (($this->_unicode_high_codepoint - 0xD800) * 0x400)
+                $combined_codepoint = (($this->unicodeHighCodepoint - 0xD800) * 0x400)
                     + ($codepoint - 0xDC00) + 0x10000;
 
-                $this->_end_unicode_character($combined_codepoint);
+                $this->endUnicodeCharacter($combined_codepoint);
             } else {
-                $this->_end_unicode_character($codepoint);
+                $this->endUnicodeCharacter($codepoint);
             }
         }
     }
 
-    private function _end_unicode_character($codepoint)
+    private function endUnicodeCharacter($codepoint)
     {
-        $this->_buffer .= $this->_convert_codepoint_to_character($codepoint);
-        $this->_unicode_buffer = array();
-        $this->_unicode_high_codepoint = -1;
-        $this->_state = self::STATE_IN_STRING;
+        $this->buffer .= $this->convertCodepointToCharacter($codepoint);
+        $this->unicodeBuffer = array();
+        $this->unicodeHighCodepoint = -1;
+        $this->state = self::STATE_IN_STRING;
     }
 
 
-    private function _start_number($c)
+    private function startNumber($c)
     {
-        $this->_state = self::STATE_IN_NUMBER;
-        $this->_buffer .= $c;
+        $this->state = self::STATE_IN_NUMBER;
+        $this->buffer .= $c;
     }
 
-    private function _end_number()
+    private function endNumber()
     {
-        $num = $this->_buffer;
+        $num = $this->buffer;
         if (preg_match('/\./', $num)) {
             $num = (float) ($num);
         } else {
             $num = (int) ($num);
         }
-        $this->_listener->value($num);
+        $this->listener->value($num);
 
-        $this->_buffer = '';
-        $this->_state = self::STATE_AFTER_VALUE;
+        $this->buffer = '';
+        $this->state = self::STATE_AFTER_VALUE;
     }
 
 
-    private function _end_true()
+    private function endTrue()
     {
-        $true = $this->_buffer;
+        $true = $this->buffer;
         if ($true === 'true') {
-            $this->_listener->value(true);
+            $this->listener->value(true);
         } else {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Expected 'true'. Got: " . $true
             );
         }
-        $this->_buffer = '';
-        $this->_state = self::STATE_AFTER_VALUE;
+        $this->buffer = '';
+        $this->state = self::STATE_AFTER_VALUE;
     }
 
-    private function _end_false()
+    private function endFalse()
     {
-        $false = $this->_buffer;
+        $false = $this->buffer;
         if ($false === 'false') {
-            $this->_listener->value(false);
+            $this->listener->value(false);
         } else {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Expected 'false'. Got: " . $false
             );
         }
-        $this->_buffer = '';
-        $this->_state = self::STATE_AFTER_VALUE;
+        $this->buffer = '';
+        $this->state = self::STATE_AFTER_VALUE;
     }
 
-    private function _end_null()
+    private function endNull()
     {
-        $null = $this->_buffer;
+        $null = $this->buffer;
         if ($null === 'null') {
-            $this->_listener->value(null);
+            $this->listener->value(null);
         } else {
             throw new ParsingError(
-                $this->_line_number,
-                $this->_char_number,
+                $this->lineNumber,
+                $this->charNumber,
                 "Expected 'null'. Got: " . $null
             );
         }
-        $this->_buffer = '';
-        $this->_state = self::STATE_AFTER_VALUE;
+        $this->buffer = '';
+        $this->state = self::STATE_AFTER_VALUE;
     }
 
 
-    private function _end_document()
+    private function endDocument()
     {
-        $this->_listener->end_document();
-        $this->_state = self::STATE_DONE;
+        $this->listener->end_document();
+        $this->state = self::STATE_DONE;
     }
 }
