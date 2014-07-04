@@ -66,12 +66,12 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
 
     $this->assertSame(
       array(
-        array('value' => '2013-10-24', 'line' => 5, 'char' => 34,),
-        array('value' => '2013-10-25', 'line' => 5, 'char' => 59,),
-        array('value' => '2013-10-26', 'line' => 6, 'char' => 34,),
-        array('value' => '2013-10-27', 'line' => 6, 'char' => 59,),
-        array('value' => '2013-11-01', 'line' => 10, 'char' => 44,),
-        array('value' => '2013-11-10','line' => 10, 'char' => 69,),
+        array('value' => '2013-10-24', 'line' => null, 'char' => null,),
+        array('value' => '2013-10-25', 'line' => null, 'char' => null,),
+        array('value' => '2013-10-26', 'line' => null, 'char' => null,),
+        array('value' => '2013-10-27', 'line' => null, 'char' => null,),
+        array('value' => '2013-11-01', 'line' => null, 'char' => null,),
+        array('value' => '2013-11-10', 'line' => null, 'char' => null,),
       ),
       $listener->positions
     );
@@ -96,8 +96,8 @@ JSON
     unset($listener->positions[1]['value']);
 
     $this->assertSame(array(
-        array('line' => 2, 'char' => 10004,),
-        array('line' => 3, 'char' => 10004,),
+        array('line' => null, 'char' => null,),
+        array('line' => null, 'char' => null,),
       ),
       $listener->positions
     );
