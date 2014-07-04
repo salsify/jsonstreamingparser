@@ -80,7 +80,6 @@ class Parser
 
             $byteLen = strlen($line);
             for ($i = 0; $i < $byteLen; $i++) {
-                // $this->listener->file_position($this->lineNumber, $this->charNumber);
                 $this->consumeChar($line[$i]);
                 $this->charNumber++;
             }
@@ -105,11 +104,6 @@ class Parser
                 $this->state === self::STATE_IN_NUMBER ||
                 $this->state === self::STATE_START_DOCUMENT)
         ) {
-            // we wrap this so that we don't make a ton of unnecessary function calls
-            // unless someone really, really cares about whitespace.
-            if ($this->emitWhitespace) {
-                $this->listener->whitespace($c);
-            }
             return;
         }
 

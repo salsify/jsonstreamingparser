@@ -10,15 +10,6 @@ class TestListener implements Listener
 
     public $positions = array();
 
-    private $currentLine;
-    private $currentChar;
-
-    public function onFilePositionChanged($line, $char)
-    {
-        $this->currentLine = $line;
-        $this->currentChar = $char;
-    }
-
     public function onDocumentStart()
     {
         $this->order[] = __FUNCTION__;
@@ -57,12 +48,7 @@ class TestListener implements Listener
     public function value($value)
     {
         $this->order[] = __FUNCTION__ . ' = ' . self::stringify($value);
-        $this->positions[] = array('value' => $value, 'line' => $this->currentLine, 'char' => $this->currentChar);
-    }
-
-    public function whitespace($whitespace)
-    {
-        // do nothing
+        $this->positions[] = array('value' => $value);
     }
 
     private static function stringify($value)

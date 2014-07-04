@@ -69,40 +69,12 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame(
             array(
-                array('value' => '2013-10-24', 'line' => null, 'char' => null,),
-                array('value' => '2013-10-25', 'line' => null, 'char' => null,),
-                array('value' => '2013-10-26', 'line' => null, 'char' => null,),
-                array('value' => '2013-10-27', 'line' => null, 'char' => null,),
-                array('value' => '2013-11-01', 'line' => null, 'char' => null,),
-                array('value' => '2013-11-10', 'line' => null, 'char' => null,),
-            ),
-            $listener->positions
-        );
-    }
-
-    public function testCountsLongLinesCorrectly()
-    {
-        $value = str_repeat('!', 10000);
-        $longStream = self::inMemoryStream(
-            <<<JSON
-[
-  "$value",
-  "$value"
-]
-JSON
-        );
-
-        $listener = new TestListener();
-        $parser = new Parser($longStream, $listener);
-        $parser->parse();
-
-        unset($listener->positions[0]['value']);
-        unset($listener->positions[1]['value']);
-
-        $this->assertSame(
-            array(
-                array('line' => null, 'char' => null,),
-                array('line' => null, 'char' => null,),
+                array('value' => '2013-10-24'),
+                array('value' => '2013-10-25'),
+                array('value' => '2013-10-26'),
+                array('value' => '2013-10-27'),
+                array('value' => '2013-11-01'),
+                array('value' => '2013-11-10'),
             ),
             $listener->positions
         );

@@ -4,8 +4,6 @@ namespace JsonStreamingParser;
 
 interface Listener
 {
-    public function onFilePositionChanged($line, $char);
-
     public function onDocumentStart();
 
     public function onDocumentEnd();
@@ -23,6 +21,4 @@ interface Listener
 
     // Note that value may be a string, integer, boolean, array, etc.
     public function value($value);
-
-    public function whitespace($whitespace);
 }
