@@ -406,7 +406,10 @@ class JsonStreamingParser_Parser {
   }
 
   private function _process_unicode_character($c) {
-    if (!$this->_is_hex_character($c)) {
+    if($c == '\\') {
+        $this->_state = self::STATE_IN_STRING;
+        return;
+    }elseif (!$this->_is_hex_character($c)) {
       throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
         "Expected hex character for escaped unicode character. Unicode parsed: " . implode($this->_unicode_buffer) . " and got: ".$c);
     }
