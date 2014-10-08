@@ -112,6 +112,54 @@ JSON
     $parser->parse();
   }
 
+  public function testUnicodeSurrogatePair()
+  {
+    $listener = new TestListener();
+    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uD834\\uDD1E"]'), $listener);
+    $parser->parse();
+
+    $this->assertSame(
+      array(
+        'start_document',
+        'start_array',
+        'value = 𝄞',
+        'end_array',
+        'end_document'
+      ),
+      $listener->order
+    );
+  }
+
+  public function testMalformedUnicodeLowSurrogate()
+  {
+    $listener = new TestListener();
+    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uD834abc"]'), $listener);
+
+    $this->setExpectedException('JsonStreamingParser_ParsingError',
+      "Expected '\\u' following a Unicode high surrogate. Got: ab");
+    $parser->parse();
+  }
+
+  public function testInvalidUnicodeHighSurrogate()
+  {
+    $listener = new TestListener();
+    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uAAAA\\uDD1E"]'), $listener);
+
+    $this->setExpectedException('JsonStreamingParser_ParsingError',
+      'Missing high surrogate for Unicode low surrogate.');
+    $parser->parse();
+  }
+
+  public function testInvalidUnicodeLowSurrogate()
+  {
+    $listener = new TestListener();
+    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uD834\\uAAAA"]'), $listener);
+
+    $this->setExpectedException('JsonStreamingParser_ParsingError',
+      'Invalid low surrogate following Unicode high surrogate.');
+    $parser->parse();
+  }
+
   private static function inMemoryStream($content)
   {
     $stream = fopen('php://memory', 'rw');

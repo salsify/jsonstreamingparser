@@ -18,6 +18,7 @@ class JsonStreamingParser_Parser {
   const STATE_IN_FALSE           = 10;
   const STATE_IN_NULL            = 11;
   const STATE_AFTER_VALUE        = 12;
+  const STATE_UNICODE_SURROGATE  = 13;
 
   const STACK_OBJECT             = 0;
   const STACK_ARRAY              = 1;
@@ -36,7 +37,7 @@ class JsonStreamingParser_Parser {
   private $_buffer;
   private $_buffer_size;
   private $_unicode_buffer;
-  private $_unicode_high_codepoint;
+  private $_unicode_high_surrogate;
   private $_line_ending;
 
   private $_line_number;
@@ -61,7 +62,7 @@ class JsonStreamingParser_Parser {
     $this->_buffer = '';
     $this->_buffer_size = 8192;
     $this->_unicode_buffer = array();
-    $this->_unicode_high_codepoint = -1;
+    $this->_unicode_high_surrogate = -1;
     $this->_line_ending = $line_ending;
   }
 
@@ -175,6 +176,13 @@ class JsonStreamingParser_Parser {
 
       case self::STATE_UNICODE:
         $this->_process_unicode_character($c);
+        break;
+
+      case self::STATE_UNICODE_SURROGATE:
+        $this->_buffer .= $c;
+        if (mb_strlen($this->_buffer) == 2) {
+          $this->_end_unicode_surrogate_interstitial();
+        }
         break;
 
       case self::STATE_AFTER_VALUE:
@@ -408,33 +416,47 @@ class JsonStreamingParser_Parser {
   private function _process_unicode_character($c) {
     if (!$this->_is_hex_character($c)) {
       throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-        "Expected hex character for escaped unicode character. Unicode parsed: " . implode($this->_unicode_buffer) . " and got: ".$c);
+        "Expected hex character for escaped Unicode character. Unicode parsed: " . implode($this->_unicode_buffer) . " and got: ".$c);
     }
     array_push($this->_unicode_buffer, $c);
     if (count($this->_unicode_buffer) === 4) {
       $codepoint = hexdec(implode($this->_unicode_buffer));
 
       if ($codepoint >= 0xD800 && $codepoint < 0xDC00) {
-        $this->_unicode_high_codepoint = $codepoint;
+        $this->_unicode_high_surrogate = $codepoint;
         $this->_unicode_buffer = array();
+        $this->_state = self::STATE_UNICODE_SURROGATE;
       } elseif ($codepoint >= 0xDC00 && $codepoint <= 0xDFFF) {
-        if ($this->_unicode_high_codepoint === -1) {
+        if ($this->_unicode_high_surrogate === -1) {
           throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-            "Missing high codepoint for unicode low codepoint.");
+            "Missing high surrogate for Unicode low surrogate.");
         }
-        $combined_codepoint = (($this->_unicode_high_codepoint - 0xD800) * 0x400) + ($codepoint - 0xDC00) + 0x10000;
+        $combined_codepoint = (($this->_unicode_high_surrogate - 0xD800) * 0x400) + ($codepoint - 0xDC00) + 0x10000;
 
         $this->_end_unicode_character($combined_codepoint);
+      } else if ($this->_unicode_high_surrogate != -1) {
+        throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
+          "Invalid low surrogate following Unicode high surrogate.");
       } else {
         $this->_end_unicode_character($codepoint);
       }
     }
   }
 
+  private function _end_unicode_surrogate_interstitial() {
+    $unicode_escape = $this->_buffer;
+    if ($unicode_escape != '\\u') {
+      throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
+        "Expected '\\u' following a Unicode high surrogate. Got: " . $unicode_escape);
+    }
+    $this->_buffer = '';
+    $this->_state = self::STATE_UNICODE;
+  }  
+
   private function _end_unicode_character($codepoint) {
     $this->_buffer .= $this->_convert_codepoint_to_character($codepoint);
     $this->_unicode_buffer = array();
-    $this->_unicode_high_codepoint = -1;
+    $this->_unicode_high_surrogate = -1;
     $this->_state = self::STATE_IN_STRING;
   }
 
