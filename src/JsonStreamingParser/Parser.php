@@ -38,6 +38,7 @@ class JsonStreamingParser_Parser {
   private $_buffer_size;
   private $_unicode_buffer;
   private $_unicode_high_surrogate;
+  private $_unicode_escape_buffer;
   private $_line_ending;
 
   private $_line_number;
@@ -62,6 +63,7 @@ class JsonStreamingParser_Parser {
     $this->_buffer = '';
     $this->_buffer_size = 8192;
     $this->_unicode_buffer = array();
+    $this->_unicode_escape_buffer = '';
     $this->_unicode_high_surrogate = -1;
     $this->_line_ending = $line_ending;
   }
@@ -179,8 +181,8 @@ class JsonStreamingParser_Parser {
         break;
 
       case self::STATE_UNICODE_SURROGATE:
-        $this->_buffer .= $c;
-        if (mb_strlen($this->_buffer) == 2) {
+        $this->_unicode_escape_buffer .= $c;
+        if (mb_strlen($this->_unicode_escape_buffer) == 2) {
           $this->_end_unicode_surrogate_interstitial();
         }
         break;
@@ -444,12 +446,12 @@ class JsonStreamingParser_Parser {
   }
 
   private function _end_unicode_surrogate_interstitial() {
-    $unicode_escape = $this->_buffer;
+    $unicode_escape = $this->_unicode_escape_buffer;
     if ($unicode_escape != '\\u') {
       throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
         "Expected '\\u' following a Unicode high surrogate. Got: " . $unicode_escape);
     }
-    $this->_buffer = '';
+    $this->_unicode_escape_buffer = '';
     $this->_state = self::STATE_UNICODE;
   }  
 

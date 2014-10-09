@@ -115,14 +115,14 @@ JSON
   public function testUnicodeSurrogatePair()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uD834\\uDD1E"]'), $listener);
+    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["Treble clef: \\uD834\\uDD1E!"]'), $listener);
     $parser->parse();
 
     $this->assertSame(
       array(
         'start_document',
         'start_array',
-        'value = 𝄞',
+        'value = Treble clef: 𝄞!',
         'end_array',
         'end_document'
       ),
