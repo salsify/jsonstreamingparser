@@ -15,7 +15,7 @@ interface JsonStreamingParser_Listener {
   // Key will always be a string
   public function key($key);
 
-  // Note that value may be a string, integer, boolean, array, etc.
+  // Note that value may be a string, integer, boolean, etc.
   public function value($value);
 
   public function whitespace($whitespace);
