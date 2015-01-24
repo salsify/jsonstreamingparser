@@ -56,15 +56,15 @@ class InMemoryListener extends JsonStreamingParser\Listener\IdleListener {
   }
 
   private function _end_complex_value() {
-    $obj = array_pop($this->_stack)['value'];
+    $obj = array_pop($this->_stack);
 
     // If the value stack is now empty, we're done parsing the document, so we can
     // move the result into place so that get_json() can return it. Otherwise, we 
     // associate the value 
     if (empty($this->_stack)) {
-      $this->_result = $obj;
+      $this->_result = $obj['value'];
     } else {
-      $this->_insert_value($obj);
+      $this->_insert_value($obj['value']);
     }
   }
 
