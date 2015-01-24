@@ -9,7 +9,7 @@ require_once dirname(__FILE__).'/../src/JsonStreamingParser/Listener/IdleListene
  * serve as a starting point for more complex listeners, and illustrates some
  * useful concepts for working with a streaming-style parser.
  */
-class InMemoryListener implements JsonStreamingParser_Listener_IdleListener {
+class InMemoryListener extends JsonStreamingParser\Listener\IdleListener {
   private $_result;
 
   private $_stack;
@@ -64,7 +64,7 @@ class InMemoryListener implements JsonStreamingParser_Listener_IdleListener {
     if (empty($this->_stack)) {
       $this->_result = $obj;
     } else {
-      $this->_insert_value($value);
+      $this->_insert_value($obj);
     }
   }
 
