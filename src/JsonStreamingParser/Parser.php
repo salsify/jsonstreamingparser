@@ -33,6 +33,7 @@ class JsonStreamingParser_Parser {
    */
   private $_listener;
   private $_emit_whitespace;
+  private $_emit_file_position;
 
   private $_buffer;
   private $_buffer_size;
