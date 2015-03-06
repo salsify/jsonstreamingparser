@@ -214,7 +214,7 @@ class JsonStreamingParser_Parser {
         break;
 
       case self::STATE_IN_NUMBER:
-        if (preg_match('/\d/', $c)) {
+        if (ctype_digit($c)) {
           $this->_buffer .= $c;
         } elseif ($c === '.') {
           if (strpos($this->_buffer, '.') !== false) {
@@ -277,7 +277,7 @@ class JsonStreamingParser_Parser {
   }
 
   private function _is_hex_character($c) {
-    return preg_match('/[0-9a-fA-F]/u', $c);
+    return ctype_xdigit($c);
   }
 
   // Thanks: http://stackoverflow.com/questions/1805802/php-convert-unicode-codepoint-to-utf-8
@@ -291,7 +291,7 @@ class JsonStreamingParser_Parser {
 
   private function _is_digit($c) {
     // Only concerned with the first character in a number.
-    return preg_match('/[0-9]|-/u',$c);
+    return ctype_digit($c) || $c === '-';
   }
 
 
@@ -470,7 +470,7 @@ class JsonStreamingParser_Parser {
 
   private function _end_number() {
     $num = $this->_buffer;
-    if (preg_match('/\./', $num)) {
+    if (strpos($num, '.') !== false) {
       $num = (float)($num);
     } else {
       $num = (int)($num);
