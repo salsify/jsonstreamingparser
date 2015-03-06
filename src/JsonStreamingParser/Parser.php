@@ -56,6 +56,7 @@ class JsonStreamingParser_Parser {
     $this->_stream = $stream;
     $this->_listener = $listener;
     $this->_emit_whitespace = $emit_whitespace;
+    $this->_emit_file_position = method_exists($listener, 'file_position');
 
     $this->_state = self::STATE_START_DOCUMENT;
     $this->_stack = array();
@@ -83,7 +84,9 @@ class JsonStreamingParser_Parser {
 
       $byteLen = strlen($line);
       for ($i = 0; $i < $byteLen; $i++) {
-        $this->_listener->file_position($this->_line_number, $this->_char_number);
+        if($this->_emit_file_position) {
+          call_user_func([$this->_listener, 'file_position'], $this->_line_number, $this->_char_number);
+        }
         $this->_consume_char($line[$i]);
         $this->_char_number++;
       }
