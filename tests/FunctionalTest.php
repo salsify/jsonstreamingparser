@@ -160,6 +160,15 @@ JSON
     $parser->parse();
   }
 
+  public function testFilePositionIsCalledIfDefined() {
+    $stub = new TestFilePositionListener();
+
+    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $stub);
+    $parser->parse();
+
+    $this->assertTrue($stub->called);
+  }
+
   private static function inMemoryStream($content)
   {
     $stream = fopen('php://memory', 'rw');
@@ -236,5 +245,13 @@ class TestListener implements \JsonStreamingParser_Listener
   private static function stringify($value)
   {
     return strlen($value) ? $value : var_export($value, true);
+  }
+}
+
+class TestFilePositionListener extends TestListener {
+  public $called = false;
+
+  public function file_position($line, $char) {
+    $this->called = true;
   }
 }

@@ -33,6 +33,7 @@ class JsonStreamingParser_Parser {
    */
   private $_listener;
   private $_emit_whitespace;
+  private $_emit_file_position;
 
   private $_buffer;
   private $_buffer_size;
@@ -56,6 +57,7 @@ class JsonStreamingParser_Parser {
     $this->_stream = $stream;
     $this->_listener = $listener;
     $this->_emit_whitespace = $emit_whitespace;
+    $this->_emit_file_position = method_exists($listener, 'file_position');
 
     $this->_state = self::STATE_START_DOCUMENT;
     $this->_stack = array();
@@ -83,7 +85,9 @@ class JsonStreamingParser_Parser {
 
       $byteLen = strlen($line);
       for ($i = 0; $i < $byteLen; $i++) {
-        $this->_listener->file_position($this->_line_number, $this->_char_number);
+        if($this->_emit_file_position) {
+          call_user_func([$this->_listener, 'file_position'], $this->_line_number, $this->_char_number);
+        }
         $this->_consume_char($line[$i]);
         $this->_char_number++;
       }
@@ -214,7 +218,7 @@ class JsonStreamingParser_Parser {
         break;
 
       case self::STATE_IN_NUMBER:
-        if (preg_match('/\d/', $c)) {
+        if (ctype_digit($c)) {
           $this->_buffer .= $c;
         } elseif ($c === '.') {
           if (strpos($this->_buffer, '.') !== false) {
@@ -277,7 +281,7 @@ class JsonStreamingParser_Parser {
   }
 
   private function _is_hex_character($c) {
-    return preg_match('/[0-9a-fA-F]/u', $c);
+    return ctype_xdigit($c);
   }
 
   // Thanks: http://stackoverflow.com/questions/1805802/php-convert-unicode-codepoint-to-utf-8
@@ -291,7 +295,7 @@ class JsonStreamingParser_Parser {
 
   private function _is_digit($c) {
     // Only concerned with the first character in a number.
-    return preg_match('/[0-9]|-/u',$c);
+    return ctype_digit($c) || $c === '-';
   }
 
 
@@ -470,7 +474,7 @@ class JsonStreamingParser_Parser {
 
   private function _end_number() {
     $num = $this->_buffer;
-    if (preg_match('/\./', $num)) {
+    if (strpos($num, '.') !== false) {
       $num = (float)($num);
     } else {
       $num = (int)($num);

@@ -7,8 +7,6 @@ namespace JsonStreamingParser\Listener;
  */
 class IdleListener implements \JsonStreamingParser_Listener
 {
-  public function file_position($line, $char) {}
-
   public function start_document() {}
 
   public function end_document() {}
