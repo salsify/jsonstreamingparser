@@ -86,7 +86,7 @@ class JsonStreamingParser_Parser {
       $byteLen = strlen($line);
       for ($i = 0; $i < $byteLen; $i++) {
         if($this->_emit_file_position) {
-          call_user_func([$this->_listener, 'file_position'], $this->_line_number, $this->_char_number);
+          call_user_func(array($this->_listener, 'file_position'), $this->_line_number, $this->_char_number);
         }
         $this->_consume_char($line[$i]);
         $this->_char_number++;
