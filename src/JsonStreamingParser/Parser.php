@@ -46,7 +46,7 @@ class JsonStreamingParser_Parser {
   private $_char_number;
 
 
-  public function __construct($stream, $listener, $line_ending = "\n", $emit_whitespace = false) {
+  public function __construct($stream, $listener, $line_ending = "\n", $emit_whitespace = false, $buffer_size = 8192) {
     if (!is_resource($stream) || get_resource_type($stream) != 'stream') {
       throw new InvalidArgumentException("Argument is not a stream");
     }
@@ -63,7 +63,7 @@ class JsonStreamingParser_Parser {
     $this->_stack = array();
 
     $this->_buffer = '';
-    $this->_buffer_size = 8192;
+    $this->_buffer_size = $buffer_size;
     $this->_unicode_buffer = array();
     $this->_unicode_escape_buffer = '';
     $this->_unicode_high_surrogate = -1;
