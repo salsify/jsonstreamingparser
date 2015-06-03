@@ -24,7 +24,7 @@ abstract class SubsetConsumer implements \JsonStreamingParser_Listener
 
   public function start_object()
   {
-    array_push($this->keyValueStack, is_null($this->key) ? array(array()) : array($this->key => array()));
+    $this->keyValueStack[] = is_null($this->key) ? array(array()) : array($this->key => array());
     $this->key = null;
   }
 
@@ -64,9 +64,9 @@ abstract class SubsetConsumer implements \JsonStreamingParser_Listener
     if ($this->key) {
       $keyValue[$objKey][$this->key] = $value;
     } else {
-      array_push($keyValue[$objKey], $value);
+      $keyValue[$objKey][] = $value;
     }
-    array_push($this->keyValueStack, $keyValue);
+    $this->keyValueStack[] = $keyValue;
   }
 
   public function whitespace($whitespace) {

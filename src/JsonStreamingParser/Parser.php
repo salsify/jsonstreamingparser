@@ -327,7 +327,7 @@ class JsonStreamingParser_Parser {
   private function _start_array() {
     $this->_listener->start_array();
     $this->_state = self::STATE_IN_ARRAY;
-    array_push($this->_stack, self::STACK_ARRAY);
+    $this->_stack[] = self::STACK_ARRAY;
   }
 
   private function _end_array() {
@@ -348,7 +348,7 @@ class JsonStreamingParser_Parser {
   private function _start_object() {
     $this->_listener->start_object();
     $this->_state = self::STATE_IN_OBJECT;
-    array_push($this->_stack, self::STACK_OBJECT);
+    $this->_stack[] = self::STACK_OBJECT;
   }
 
   private function _end_object() {
@@ -366,12 +366,12 @@ class JsonStreamingParser_Parser {
   }
 
   private function _start_string() {
-    array_push($this->_stack, self::STACK_STRING);
+    $this->_stack[] = self::STACK_STRING;
     $this->_state = self::STATE_IN_STRING;
   }
 
   private function _start_key() {
-    array_push($this->_stack, self::STACK_KEY);
+    $this->_stack[] = self::STACK_KEY;
     $this->_state = self::STATE_IN_STRING;
   }
 
@@ -424,7 +424,7 @@ class JsonStreamingParser_Parser {
       throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
         "Expected hex character for escaped Unicode character. Unicode parsed: " . implode($this->_unicode_buffer) . " and got: ".$c);
     }
-    array_push($this->_unicode_buffer, $c);
+    $this->_unicode_buffer[] = $c;
     if (count($this->_unicode_buffer) === 4) {
       $codepoint = hexdec(implode($this->_unicode_buffer));
 
