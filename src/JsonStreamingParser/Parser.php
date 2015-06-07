@@ -120,17 +120,18 @@ class JsonStreamingParser_Parser {
 
     switch ($this->_state) {
 
-      case self::STATE_START_DOCUMENT:
-        $this->_listener->start_document();
-        if ($c === '[') {
-          $this->_start_array();
-        } elseif ($c === '{') {
-          $this->_start_object();
-        } else {
-          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-            "Document must start with object or array.");
-        }
-        break;
+      case self::STATE_IN_STRING:
+       if ($c === '"') {
+         $this->_end_string();
+       } elseif ($c === '\\') {
+         $this->_state = self::STATE_START_ESCAPE;
+       } elseif (($c < "\x1f") || ($c === "\x7f")) {
+           throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
+             "Unescaped control character encountered: ".$c);
+       } else {
+         $this->_buffer .= $c;
+       }
+       break;
 
       case self::STATE_IN_ARRAY:
         if ($c === ']') {
@@ -161,19 +162,6 @@ class JsonStreamingParser_Parser {
 
       case self::STATE_AFTER_KEY:
         $this->_start_value($c);
-        break;
-
-      case self::STATE_IN_STRING:
-        if ($c === '"') {
-          $this->_end_string();
-        } elseif ($c === '\\') {
-          $this->_state = self::STATE_START_ESCAPE;
-        } elseif (($c < "\x1f") || ($c === "\x7f")) {
-          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
-            "Unescaped control character encountered: ".$c);
-        } else {
-          $this->_buffer .= $c;
-        }
         break;
 
       case self::STATE_START_ESCAPE:
@@ -267,6 +255,18 @@ class JsonStreamingParser_Parser {
         $this->_buffer .= $c;
         if (mb_strlen($this->_buffer) === 4) {
           $this->_end_null();
+        }
+        break;
+
+      case self::STATE_START_DOCUMENT:
+        $this->_listener->start_document();
+        if ($c === '[') {
+          $this->_start_array();
+        } elseif ($c === '{') {
+          $this->_start_object();
+        } else {
+          throw new JsonStreamingParser_ParsingError($this->_line_number, $this->_char_number,
+            "Document must start with object or array.");
         }
         break;
 
