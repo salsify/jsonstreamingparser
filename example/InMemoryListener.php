@@ -41,7 +41,7 @@ class InMemoryListener extends JsonStreamingParser\Listener\IdleListener {
   }
 
   public function key($key) {
-    array_push($this->_keys, $key);
+    $this->_keys[] = $key;
   }
 
   public function value($value) {
@@ -52,7 +52,7 @@ class InMemoryListener extends JsonStreamingParser\Listener\IdleListener {
     // We keep a stack of complex values (i.e. arrays and objects) as we build them,
     // tagged with the type that they are so we know how to add new values.
     $current_item = array('type' => $type, 'value' => array());
-    array_push($this->_stack, $current_item);
+    $this->_stack[] = $current_item;
   }
 
   private function _end_complex_value() {
@@ -80,10 +80,10 @@ class InMemoryListener extends JsonStreamingParser\Listener\IdleListener {
     if ($current_item['type'] === 'object') {
       $current_item['value'][array_pop($this->_keys)] = $value;
     } else {
-      array_push($current_item['value'], $value);
+      $current_item['value'][] = $value;
     }
 
     // Replace the current item on the stack.
-    array_push($this->_stack, $current_item);
+    $this->_stack[] = $current_item;
   }
 }

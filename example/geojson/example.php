@@ -36,7 +36,7 @@ class GeoJsonParser implements JsonStreamingParser_Listener {
 
     public function start_object() {
         $this->_level++;
-        array_push($this->_stack, array());
+        $this->_stack[] = array();
         // Reset the stack when entering the second level
         if($this->_level == 2) {
             $this->_stack = array();
@@ -79,9 +79,9 @@ class GeoJsonParser implements JsonStreamingParser_Listener {
             $obj[$this->_key[$this->_level]] = $value;
             $this->_key[$this->_level] = null;
         } else {
-            array_push($obj, $value);
+            $obj[] = $value;
         }
-        array_push($this->_stack, $obj);
+        $this->_stack[] = $obj;
     }
 
     public function whitespace($whitespace) {
