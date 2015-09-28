@@ -1,5 +1,7 @@
 <?php
 
+use JsonStreamingParser\Parser;
+
 require_once dirname(__FILE__).'/../example/InMemoryListener.php';
 
 class InMemoryListenerTest extends \PHPUnit_Framework_TestCase
@@ -19,7 +21,7 @@ class InMemoryListenerTest extends \PHPUnit_Framework_TestCase
     $listener = new InMemoryListener();
     $stream = fopen($testfile, 'r');
     try {
-      $parser = new JsonStreamingParser_Parser($stream, $listener);
+      $parser = new Parser($stream, $listener);
       $parser->parse();
       fclose($stream);
     } catch (Exception $e) {

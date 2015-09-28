@@ -19,7 +19,7 @@ To use the `JsonStreamingParser` you just have to implement the `\JsonStreamingP
 $stream = fopen('doc.json', 'r');
 $listener = new YourListener();
 try {
-  $parser = new JsonStreamingParser_Parser($stream, $listener);
+  $parser = new \JsonStreamingParser\Parser($stream, $listener);
   $parser->parse();
 } catch (Exception $e) {
   fclose($stream);

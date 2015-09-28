@@ -1,6 +1,6 @@
-<?php 
-class JsonStreamingParser_ParsingError extends Exception {
+<?php namespace JsonStreamingParser;
 
+class ParsingError extends \Exception {
   /**
    * @param int $line
    * @param int $char

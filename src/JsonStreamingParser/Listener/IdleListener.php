@@ -1,11 +1,10 @@
-<?php
-
-namespace JsonStreamingParser\Listener;
+<?php namespace JsonStreamingParser\Listener;
+use JsonStreamingParser\Listener;
 
 /**
  * Base listener which does nothing
  */
-class IdleListener implements \JsonStreamingParser_Listener
+class IdleListener implements Listener
 {
   public function start_document() {}
 

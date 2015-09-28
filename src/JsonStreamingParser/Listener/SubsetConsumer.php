@@ -1,8 +1,8 @@
-<?php
+<?php namespace JsonStreamingParser\Listener;
 
-namespace JsonStreamingParser\Listener;
+use JsonStreamingParser\Listener;
 
-abstract class SubsetConsumer implements \JsonStreamingParser_Listener
+abstract class SubsetConsumer implements Listener
 {
   private $keyValueStack;
   private $key;

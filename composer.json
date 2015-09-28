@@ -25,8 +25,8 @@
   },
 
   "autoload": {
-    "psr-0": {
-      "JsonStreamingParser": "src/"
+    "psr-4": {
+      "JsonStreamingParser\\": "src/JsonStreamingParser"
     }
   }
 }
