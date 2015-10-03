@@ -1,6 +1,6 @@
 <?php
-require_once dirname(__FILE__).'/../../src/JsonStreamingParser/Listener.php';
-require_once dirname(__FILE__).'/../../src/JsonStreamingParser/Parser.php';
+require_once dirname(__FILE__) . '/../../src/JsonStreamingParser/Listener.php';
+require_once dirname(__FILE__) . '/../../src/JsonStreamingParser/Parser.php';
 
 /**
  * This basic geojson implementation of a listener simply constructs an in-memory

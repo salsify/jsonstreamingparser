@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__).'/../src/JsonStreamingParser/Parser.php';
+require_once dirname(__FILE__) . '/../src/JsonStreamingParser/Parser.php';
 require_once dirname(__FILE__).'/InMemoryListener.php';
 
 $testfile = dirname(__FILE__).'/example.json';

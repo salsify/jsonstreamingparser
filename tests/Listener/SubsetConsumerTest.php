@@ -1,13 +1,14 @@
 <?php
 
-namespace JsonStreamingParser\Listener;
+use JsonStreamingParser\Listener\SubsetConsumer;
+use JsonStreamingParser\Parser;
 
 class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
 {
   public function testProposesAJsonSubsetToConsume()
   {
     $listener = new DatesRangeConsumer;
-    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/data/dateRanges.json', 'r'), $listener);
+    $parser = new Parser(fopen(__DIR__ . '/data/dateRanges.json', 'r'), $listener);
     $parser->parse();
 
     $this->assertSame(
@@ -32,7 +33,7 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
   public function testConsumesFirstLevelCorrectly()
   {
     $listener = new IdealConsumer;
-    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/data/plain.json', 'r'), $listener);
+    $parser = new Parser(fopen(__DIR__ . '/data/plain.json', 'r'), $listener);
     $parser->parse();
 
     $this->assertEquals(
@@ -47,7 +48,7 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
   public function testCollectsStructureCorrectly($fileToProcess)
   {
     $listener = new IdealConsumer;
-    $parser = new \JsonStreamingParser_Parser(fopen($fileToProcess, 'r'), $listener);
+    $parser = new Parser(fopen($fileToProcess, 'r'), $listener);
     $parser->parse();
 
     $this->assertEquals(

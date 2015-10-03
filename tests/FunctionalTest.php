@@ -1,13 +1,13 @@
 <?php
-
-namespace JsonStreamingParser;
+use JsonStreamingParser\Listener;
+use JsonStreamingParser\Parser;
 
 class FunctionalTest extends \PHPUnit_Framework_TestCase
 {
   public function testTraverseOrder()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $listener);
+    $parser = new Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $listener);
     $parser->parse();
 
     $this->assertSame(
@@ -61,7 +61,7 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
   public function testListenerGetsNotifiedAboutPositionInFileOfDataRead()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/Listener/data/dateRanges.json', 'r'), $listener);
+    $parser = new Parser(fopen(__DIR__ . '/Listener/data/dateRanges.json', 'r'), $listener);
     $parser->parse();
 
     $this->assertSame(
@@ -89,7 +89,7 @@ JSON
     );
 
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser($longStream, $listener);
+    $parser = new Parser($longStream, $listener);
     $parser->parse();
 
     unset($listener->positions[0]['value']);
@@ -106,16 +106,16 @@ JSON
   public function testThrowsParingError()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('{ invalid json }'), $listener);
+    $parser = new Parser(self::inMemoryStream('{ invalid json }'), $listener);
 
-    $this->setExpectedException('JsonStreamingParser_ParsingError', 'Parsing error in [1:3]');
+    $this->setExpectedException('JsonStreamingParser\\ParsingError', 'Parsing error in [1:3]');
     $parser->parse();
   }
 
   public function testUnicodeSurrogatePair()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["Treble clef: \\uD834\\uDD1E!"]'), $listener);
+    $parser = new Parser(self::inMemoryStream('["Treble clef: \\uD834\\uDD1E!"]'), $listener);
     $parser->parse();
 
     $this->assertSame(
@@ -133,9 +133,9 @@ JSON
   public function testMalformedUnicodeLowSurrogate()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uD834abc"]'), $listener);
+    $parser = new Parser(self::inMemoryStream('["\\uD834abc"]'), $listener);
 
-    $this->setExpectedException('JsonStreamingParser_ParsingError',
+    $this->setExpectedException('JsonStreamingParser\\ParsingError',
       "Expected '\\u' following a Unicode high surrogate. Got: ab");
     $parser->parse();
   }
@@ -143,9 +143,9 @@ JSON
   public function testInvalidUnicodeHighSurrogate()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uAAAA\\uDD1E"]'), $listener);
+    $parser = new Parser(self::inMemoryStream('["\\uAAAA\\uDD1E"]'), $listener);
 
-    $this->setExpectedException('JsonStreamingParser_ParsingError',
+    $this->setExpectedException('JsonStreamingParser\\ParsingError',
       'Missing high surrogate for Unicode low surrogate.');
     $parser->parse();
   }
@@ -153,9 +153,9 @@ JSON
   public function testInvalidUnicodeLowSurrogate()
   {
     $listener = new TestListener();
-    $parser = new \JsonStreamingParser_Parser(self::inMemoryStream('["\\uD834\\uAAAA"]'), $listener);
+    $parser = new Parser(self::inMemoryStream('["\\uD834\\uAAAA"]'), $listener);
 
-    $this->setExpectedException('JsonStreamingParser_ParsingError',
+    $this->setExpectedException('JsonStreamingParser\\ParsingError',
       'Invalid low surrogate following Unicode high surrogate.');
     $parser->parse();
   }
@@ -163,7 +163,7 @@ JSON
   public function testFilePositionIsCalledIfDefined() {
     $stub = new TestFilePositionListener();
 
-    $parser = new \JsonStreamingParser_Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $stub);
+    $parser = new Parser(fopen(__DIR__ . '/../example/example.json', 'r'), $stub);
     $parser->parse();
 
     $this->assertTrue($stub->called);
@@ -180,7 +180,7 @@ JSON
 
 //======================================================================================================================
 
-class TestListener implements \JsonStreamingParser_Listener
+class TestListener implements Listener
 {
 
   public $order = array();
