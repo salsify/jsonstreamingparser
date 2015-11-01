@@ -474,11 +474,16 @@ class Parser {
 
   private function _end_number() {
     $num = $this->_buffer;
-    if (strpos($num, '.') !== false) {
-      $num = (float)($num);
+
+    // thanks to #andig for the fix for big integers
+    if (ctype_digit($num) && ((float)$num === (float)((int)$num))) {
+      // natural number PHP_INT_MIN < $num < PHP_INT_MAX
+      $num = (int)$num;
     } else {
-      $num = (int)($num);
+      // real number or natural number outside PHP_INT_MIN ... PHP_INT_MAX
+      $num = (float)$num;
     }
+
     $this->_listener->value($num);
 
     $this->_buffer = '';
