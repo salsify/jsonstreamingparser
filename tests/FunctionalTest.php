@@ -169,6 +169,22 @@ JSON
     $this->assertTrue($stub->called);
   }
 
+  public function testStopEarly()
+  {
+    $listener = new TestStopEarlyListener();
+    $parser = new Parser(self::inMemoryStream('["abc","def"]'), $listener);
+    $listener->set_parser($parser);
+    $parser->parse();
+
+    $this->assertSame(
+      array(
+        'start_document',
+        'start_array'
+      ),
+      $listener->order
+    );
+  }
+
   private static function inMemoryStream($content)
   {
     $stream = fopen('php://memory', 'rw');
@@ -253,5 +269,24 @@ class TestFilePositionListener extends TestListener {
 
   public function file_position($line, $char) {
     $this->called = true;
+  }
+}
+
+class TestStopEarlyListener extends TestListener {
+  /**
+   * @var \JsonStreamingParser\Parser;
+   */
+  protected $parser;
+
+  /**
+   * @param Parser $parser
+   */
+  public function set_parser($parser) {
+    $this->parser = $parser;
+  }
+
+  public function start_array() {
+    parent::start_array();
+    $this->parser->stop();
   }
 }
