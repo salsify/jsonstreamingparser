@@ -45,6 +45,7 @@ class Parser {
   private $_line_number;
   private $_char_number;
 
+  private $_stop_parsing = false;
 
   public function __construct($stream, $listener, $line_ending = "\n", $emit_whitespace = false, $buffer_size = 8192) {
     if (!is_resource($stream) || get_resource_type($stream) != 'stream') {
@@ -90,6 +91,10 @@ class Parser {
         }
         $this->_consume_char($line[$i]);
         $this->_char_number++;
+
+        if ($this->_stop_parsing) {
+          return;
+        }
       }
 
       if ($ended) {
@@ -98,6 +103,10 @@ class Parser {
       }
 
     }
+  }
+
+  public function stop() {
+    $this->_stop_parsing = true;
   }
 
   private function _consume_char($c) {
