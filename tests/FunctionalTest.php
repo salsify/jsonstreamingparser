@@ -81,7 +81,7 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
     public function testCountsLongLinesCorrectly()
     {
         $value = str_repeat('!', 10000);
-        $longStream = self::inMemoryStream(<<<JSON
+        $longStream = self::getMemoryStream(<<<JSON
 [
   "$value",
   "$value"
@@ -108,7 +108,7 @@ JSON
     public function testThrowsParingError()
     {
         $listener = new Listener\TestListener();
-        $parser = new Parser(self::inMemoryStream('{ invalid json }'), $listener);
+        $parser = new Parser(self::getMemoryStream('{ invalid json }'), $listener);
 
         $this->setExpectedException('JsonStreamingParser\\ParsingError', 'Parsing error in [1:3]');
         $parser->parse();
@@ -117,7 +117,7 @@ JSON
     public function testUnicodeSurrogatePair()
     {
         $listener = new Listener\TestListener();
-        $parser = new Parser(self::inMemoryStream('["Treble clef: \\uD834\\uDD1E!"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["Treble clef: \\uD834\\uDD1E!"]'), $listener);
         $parser->parse();
 
         $this->assertSame(
@@ -135,7 +135,7 @@ JSON
     public function testMalformedUnicodeLowSurrogate()
     {
         $listener = new Listener\TestListener();
-        $parser = new Parser(self::inMemoryStream('["\\uD834abc"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["\\uD834abc"]'), $listener);
 
         $this->setExpectedException(
             'JsonStreamingParser\\ParsingError',
@@ -147,7 +147,7 @@ JSON
     public function testInvalidUnicodeHighSurrogate()
     {
         $listener = new Listener\TestListener();
-        $parser = new Parser(self::inMemoryStream('["\\uAAAA\\uDD1E"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["\\uAAAA\\uDD1E"]'), $listener);
 
         $this->setExpectedException(
             'JsonStreamingParser\\ParsingError',
@@ -159,7 +159,7 @@ JSON
     public function testInvalidUnicodeLowSurrogate()
     {
         $listener = new Listener\TestListener();
-        $parser = new Parser(self::inMemoryStream('["\\uD834\\uAAAA"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["\\uD834\\uAAAA"]'), $listener);
 
         $this->setExpectedException(
             'JsonStreamingParser\\ParsingError',
@@ -181,7 +181,7 @@ JSON
     public function testStopEarly()
     {
         $listener = new Listener\StopEarlyListener();
-        $parser = new Parser(self::inMemoryStream('["abc","def"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["abc","def"]'), $listener);
         $listener->setParser($parser);
         $parser->parse();
 
@@ -202,7 +202,7 @@ JSON
     public function testVariousErrors($data, $errorMessage)
     {
         $listener = new Listener\TestListener();
-        $parser = new Parser(self::inMemoryStream($data), $listener);
+        $parser = new Parser(self::getMemoryStream($data), $listener);
 
         $this->setExpectedException(
             'JsonStreamingParser\\ParsingError',
@@ -250,10 +250,18 @@ JSON
                 '[123,456]]',
                 "Expected end of document."
             ),
+            array(
+                '["\x7f"]',
+                "Expected escaped character after backslash. Got: x"
+            ),
         );
     }
 
-    private static function inMemoryStream($content)
+    /**
+     * @param string $content
+     * @return resource
+     */
+    private static function getMemoryStream($content)
     {
         $stream = fopen('php://memory', 'rw');
         fwrite($stream, $content);
