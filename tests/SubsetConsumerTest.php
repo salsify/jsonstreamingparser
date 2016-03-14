@@ -30,18 +30,6 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testConsumesFirstLevelCorrectly()
-    {
-        $listener = new Listener\IdealConsumer;
-        $parser = new Parser(fopen(__DIR__ . '/data/plain.json', 'r'), $listener);
-        $parser->parse();
-
-        $this->assertEquals(
-            array('key 1' => 'value 1', 'key 2' => 'value 2', 'key 3' => 'value 3'),
-            $listener->data
-        );
-    }
-
     /**
      * @dataProvider differentJsonFiles
      * @param string $fileToProcess
@@ -56,7 +44,6 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
             json_decode(file_get_contents($fileToProcess), true),
             $listener->data
         );
-
     }
 
     public static function differentJsonFiles()
