@@ -3,7 +3,7 @@ namespace JsonStreamingParser\Listener;
 
 use JsonStreamingParser\Listener;
 
-abstract class SubsetConsumer implements Listener
+abstract class SubsetConsumerListener implements Listener
 {
     private $keyValueStack;
     private $key;
@@ -14,22 +14,22 @@ abstract class SubsetConsumer implements Listener
      */
     abstract protected function consume($data);
 
-    public function start_document()
+    public function startDocument()
     {
         $this->keyValueStack = array();
     }
 
-    public function end_document()
+    public function endDocument()
     {
     }
 
-    public function start_object()
+    public function startObject()
     {
         $this->keyValueStack[] = is_null($this->key) ? array(array()) : array($this->key => array());
         $this->key = null;
     }
 
-    public function end_object()
+    public function endObject()
     {
         $keyValue = array_pop($this->keyValueStack);
         $obj = reset($keyValue);
@@ -39,17 +39,16 @@ abstract class SubsetConsumer implements Listener
         if (!empty($this->keyValueStack)) {
             $this->value($hasBeenConsumed ? '*consumed*' : $obj);
         }
-
     }
 
-    public function start_array()
+    public function startArray()
     {
-        $this->start_object();
+        $this->startObject();
     }
 
-    public function end_array()
+    public function endArray()
     {
-        $this->end_object();
+        $this->endObject();
     }
 
     public function key($key)

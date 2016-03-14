@@ -8,27 +8,27 @@ use JsonStreamingParser\Listener;
  */
 class IdleListener implements Listener
 {
-    public function start_document()
+    public function startDocument()
     {
     }
 
-    public function end_document()
+    public function endDocument()
     {
     }
 
-    public function start_object()
+    public function startObject()
     {
     }
 
-    public function end_object()
+    public function endObject()
     {
     }
 
-    public function start_array()
+    public function startArray()
     {
     }
 
-    public function end_array()
+    public function endArray()
     {
     }
 

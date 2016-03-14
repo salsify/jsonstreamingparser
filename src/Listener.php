@@ -3,22 +3,27 @@ namespace JsonStreamingParser;
 
 interface Listener
 {
-    public function start_document();
+    public function startDocument();
 
-    public function end_document();
+    public function endDocument();
 
-    public function start_object();
+    public function startObject();
 
-    public function end_object();
+    public function endObject();
 
-    public function start_array();
+    public function startArray();
 
-    public function end_array();
+    public function endArray();
 
-    // Key will always be a string
+    /**
+     * @param string $key
+     */
     public function key($key);
 
-    // Note that value may be a string, integer, boolean, etc.
+    /**
+     * Value may be a string, integer, boolean, etc.
+     * @param mixed $value
+     */
     public function value($value);
 
     public function whitespace($whitespace);
