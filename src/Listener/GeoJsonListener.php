@@ -18,6 +18,20 @@ class GeoJsonListener implements Listener
     // Level is required so we know how nested we are.
     private $level;
 
+    /**
+     * @var Callable
+     */
+    private $callback;
+
+    /**
+     *
+     * @param Callable $callback
+     */
+    public function __construct($callback = null)
+    {
+        $this->callback = $callback;
+    }
+
     public function getJson()
     {
         return $this->json;
@@ -58,9 +72,9 @@ class GeoJsonListener implements Listener
         } else {
             $this->value($obj);
         }
-        // Output the stack when returning to the second level
-        if ($this->level == 2) {
-            var_dump($this->json);
+        // Call the callback when returning to the second level
+        if ($this->level == 2 && is_callable($this->callback)) {
+            call_user_func($this->callback, $this->json);
         }
     }
 
@@ -89,7 +103,7 @@ class GeoJsonListener implements Listener
     public function value($value)
     {
         $obj = array_pop($this->stack);
-        if ($this->key[$this->level]) {
+        if (!empty($this->key[$this->level])) {
             $obj[$this->key[$this->level]] = $value;
             $this->key[$this->level] = null;
         } else {
