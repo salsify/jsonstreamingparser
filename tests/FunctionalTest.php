@@ -194,6 +194,65 @@ JSON
         );
     }
 
+    /**
+     * @dataProvider providerTestVariousErrors
+     * @param string $data
+     * @param string $errorMessage
+     */
+    public function testVariousErrors($data, $errorMessage)
+    {
+        $listener = new Listener\TestListener();
+        $parser = new Parser(self::inMemoryStream($data), $listener);
+
+        $this->setExpectedException(
+            'JsonStreamingParser\\ParsingError',
+            $errorMessage
+        );
+        $parser->parse();
+    }
+
+    public function providerTestVariousErrors()
+    {
+        return array(
+            array(
+                '{"a"}',
+                "Expected ':' after key."
+            ),
+            array(
+                '{"a":"b"]',
+                "Expected ',' or '}' while parsing object. Got: ]"
+            ),
+            array(
+                '["a","b".',
+                "Expected ',' or ']' while parsing array. Got: ."
+            ),
+            array(
+                '{"price":29..95}',
+                "Cannot have multiple decimal points in a number."
+            ),
+            array(
+                '{"count":10e1.5}',
+                "Cannot have a decimal point in an exponent."
+            ),
+            array(
+                '{"count":10e15e10}',
+                "Cannot have multiple exponents in a number."
+            ),
+            array(
+                '{"count":10-15}',
+                "Can only have '+' or '-' after the 'e' or 'E' in a number."
+            ),
+            array(
+                '123',
+                "Document must start with object or array."
+            ),
+            array(
+                '[123,456]]',
+                "Expected end of document."
+            ),
+        );
+    }
+
     private static function inMemoryStream($content)
     {
         $stream = fopen('php://memory', 'rw');
