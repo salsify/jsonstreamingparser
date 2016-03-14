@@ -26,7 +26,8 @@
 
   "autoload": {
     "psr-4": {
-      "JsonStreamingParser\\": "src/JsonStreamingParser"
+      "JsonStreamingParser\\": "src",
+      "JsonStreamingParser\\Test\\": "tests"
     }
   }
 }
