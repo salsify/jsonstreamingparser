@@ -610,35 +610,25 @@ class Parser
 
     private function endTrue()
     {
-        $true = $this->buffer;
-        if ($true === 'true') {
-            $this->listener->value(true);
-        } else {
-            $this->throwParseError("Expected 'true'. Got: " . $true);
-        }
-        $this->buffer = '';
-        $this->state = self::STATE_AFTER_VALUE;
+        $this->endSpecialValue(true, 'true');
     }
 
     private function endFalse()
     {
-        $false = $this->buffer;
-        if ($false === 'false') {
-            $this->listener->value(false);
-        } else {
-            $this->throwParseError("Expected 'false'. Got: " . $false);
-        }
-        $this->buffer = '';
-        $this->state = self::STATE_AFTER_VALUE;
+        $this->endSpecialValue(false, 'false');
     }
 
     private function endNull()
     {
-        $null = $this->buffer;
-        if ($null === 'null') {
-            $this->listener->value(null);
+        $this->endSpecialValue(null, 'null');
+    }
+
+    private function endSpecialValue($value, $stringValue)
+    {
+        if ($this->buffer === $stringValue) {
+            $this->listener->value($value);
         } else {
-            $this->throwParseError("Expected 'null'. Got: " . $null);
+            $this->throwParseError("Expected 'null'. Got: " . $this->buffer);
         }
         $this->buffer = '';
         $this->state = self::STATE_AFTER_VALUE;
