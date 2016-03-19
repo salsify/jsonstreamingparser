@@ -69,7 +69,7 @@ class InMemoryListener extends IdleListener
         $obj = array_pop($this->stack);
 
         // If the value stack is now empty, we're done parsing the document, so we can
-        // move the result into place so that get_json() can return it. Otherwise, we
+        // move the result into place so that getJson() can return it. Otherwise, we
         // associate the value
         if (empty($this->stack)) {
             $this->result = $obj['value'];
