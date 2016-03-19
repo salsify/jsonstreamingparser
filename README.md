@@ -39,6 +39,11 @@ That's it! Your `Listener` will receive events from the streaming parser as it w
 
 There is a complete example of this in `example/example.php`.
 
+Projects using this library
+---------------------------
+
+[JSON Collection Parser](https://github.com/MAXakaWIZARD/JsonCollectionParser)
+
 
 License
 -------
