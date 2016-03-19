@@ -19,10 +19,11 @@
       "name": "Max Grigorian",
       "email": "maxakawizard@gmail.com",
       "homepage": "http://wizardcat.com/"
-    },
+    }
   ],
   "require": {
-    "php": "^5.4 | ^7.0"
+    "php": "^5.4 | ^7.0",
+    "ext-mbstring": "*"
   },
 
   "require-dev": {
