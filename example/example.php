@@ -9,6 +9,7 @@ $stream = fopen($testfile, 'r');
 try {
     $parser = new \JsonStreamingParser\Parser($stream, $listener);
     $parser->parse();
+    fclose($stream);
 } catch (Exception $e) {
     fclose($stream);
     throw $e;
