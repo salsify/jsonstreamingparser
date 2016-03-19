@@ -5,7 +5,7 @@ use JsonStreamingParser\Listener\SubsetConsumerListener;
 
 class IdealConsumer extends SubsetConsumerListener
 {
-    public $data = array();
+    public $data = [];
 
     /**
      * Consumes anything

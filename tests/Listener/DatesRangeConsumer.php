@@ -5,7 +5,7 @@ use JsonStreamingParser\Listener\SubsetConsumerListener;
 
 class DatesRangeConsumer extends SubsetConsumerListener
 {
-    public $dateRanges = array();
+    public $dateRanges = [];
 
     /**
      * @param mixed $data

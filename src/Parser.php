@@ -122,11 +122,11 @@ class Parser
         $this->emitFilePosition = method_exists($listener, 'filePosition');
 
         $this->state = self::STATE_START_DOCUMENT;
-        $this->stack = array();
+        $this->stack = [];
 
         $this->buffer = '';
         $this->bufferSize = $bufferSize;
-        $this->unicodeBuffer = array();
+        $this->unicodeBuffer = [];
         $this->unicodeEscapeBuffer = '';
         $this->unicodeHighSurrogate = -1;
         $this->lineEnding = $lineEnding;
@@ -540,7 +540,7 @@ class Parser
 
             if ($codepoint >= 0xD800 && $codepoint < 0xDC00) {
                 $this->unicodeHighSurrogate = $codepoint;
-                $this->unicodeBuffer = array();
+                $this->unicodeBuffer = [];
                 $this->state = self::STATE_UNICODE_SURROGATE;
             } elseif ($codepoint >= 0xDC00 && $codepoint <= 0xDFFF) {
                 if ($this->unicodeHighSurrogate === -1) {
@@ -575,7 +575,7 @@ class Parser
     private function endUnicodeCharacter($codepoint)
     {
         $this->buffer .= $this->convertCodepointToCharacter($codepoint);
-        $this->unicodeBuffer = array();
+        $this->unicodeBuffer = [];
         $this->unicodeHighSurrogate = -1;
         $this->state = self::STATE_IN_STRING;
     }

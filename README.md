@@ -4,7 +4,7 @@ Streaming JSON parser for PHP
 [![Build Status](https://travis-ci.org/salsify/jsonstreamingparser.png?branch=master)](https://travis-ci.org/salsify/jsonstreamingparser)
 [![GitHub tag](https://img.shields.io/github/tag/salsify/jsonstreamingparser.svg?label=latest)](https://packagist.org/packages/salsify/jsonstreamingparser) 
 [![Packagist](https://img.shields.io/packagist/dt/salsify/json-streaming-parser.svg)](https://packagist.org/packages/salsify/json-streaming-parser)
-[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.3-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%205.4-8892BF.svg)](https://php.net/)
 [![License](https://img.shields.io/packagist/l/salsify/json-streaming-parser.svg)](https://packagist.org/packages/salsify/json-streaming-parser)
 
 This is a simple, streaming parser for processing large JSON documents. Use it for parsing very large JSON documents to avoid loading the entire thing into memory, which is how just about every other JSON parser for PHP works.

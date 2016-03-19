@@ -14,14 +14,19 @@
     {
       "name": "Maxim Gnatenko",
       "email": "mgnatenko@gmail.com"
-    }
+    },
+    {
+      "name": "Max Grigorian",
+      "email": "maxakawizard@gmail.com",
+      "homepage": "http://wizardcat.com/"
+    },
   ],
   "require": {
-    "php": ">=5.3"
+    "php": "^5.4 | ^7.0"
   },
 
   "require-dev": {
-    "phpunit/phpunit": "~3.7.0"
+    "phpunit/phpunit": "~4.0"
   },
 
   "autoload": {

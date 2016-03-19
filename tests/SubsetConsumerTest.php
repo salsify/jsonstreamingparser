@@ -12,20 +12,18 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
         $parser->parse();
 
         $this->assertSame(
-            array(
-                array(
+            [
+                [
                     'startDate' => '2013-10-24',
                     'endDate' => '2013-10-25',
-                ),
-                array(
+                ], [
                     'startDate' => '2013-10-26',
                     'endDate' => '2013-10-27',
-                ),
-                array(
+                ], [
                     'startDate' => '2013-11-01',
                     'endDate' => '2013-11-10',
-                ),
-            ),
+                ],
+            ],
             $listener->dateRanges
         );
     }
@@ -50,11 +48,11 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
     {
         $dataDir = __DIR__ . '/data';
 
-        return array(
-            array($dataDir . '/example.json'),
-            array($dataDir . '/plain.json'),
-            array($dataDir . '/dateRanges.json'),
-            array($dataDir . '/escapedChars.json'),
-        );
+        return [
+            [$dataDir . '/example.json'],
+            [$dataDir . '/plain.json'],
+            [$dataDir . '/dateRanges.json'],
+            [$dataDir . '/escapedChars.json'],
+        ];
     }
 }

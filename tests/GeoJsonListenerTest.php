@@ -11,7 +11,7 @@ class GeoJsonListenerTest extends \PHPUnit_Framework_TestCase
         $filePath = dirname(__FILE__) . '/data/example.geojson';
 
         $coordsCount = 0;
-        $figures = array();
+        $figures = [];
 
         $listener = new GeoJsonListener(function ($item) use (&$coordsCount, &$figures) {
             $coordsCount += count($item['geometry']['coordinates']);
@@ -29,7 +29,7 @@ class GeoJsonListenerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(7, $coordsCount);
 
-        $expectedFigures = array('Point', 'LineString', 'Polygon');
+        $expectedFigures = ['Point', 'LineString', 'Polygon'];
         $this->assertEquals($expectedFigures, $figures);
     }
 }

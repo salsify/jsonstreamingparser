@@ -5,8 +5,8 @@ use JsonStreamingParser\Listener;
 
 abstract class SubsetConsumerListener implements Listener
 {
-    private $keyValueStack;
-    private $key;
+    protected $keyValueStack;
+    protected $key;
 
     /**
      * @param mixed $data
@@ -16,7 +16,7 @@ abstract class SubsetConsumerListener implements Listener
 
     public function startDocument()
     {
-        $this->keyValueStack = array();
+        $this->keyValueStack = [];
     }
 
     public function endDocument()
@@ -25,7 +25,7 @@ abstract class SubsetConsumerListener implements Listener
 
     public function startObject()
     {
-        $this->keyValueStack[] = is_null($this->key) ? array(array()) : array($this->key => array());
+        $this->keyValueStack[] = is_null($this->key) ? [[]] : [$this->key => []];
         $this->key = null;
     }
 

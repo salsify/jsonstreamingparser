@@ -11,10 +11,9 @@ namespace JsonStreamingParser\Listener;
  */
 class InMemoryListener extends IdleListener
 {
-    private $result;
-
-    private $stack;
-    private $keys;
+    protected $result;
+    protected $stack;
+    protected $keys;
 
     public function getJson()
     {
@@ -23,8 +22,8 @@ class InMemoryListener extends IdleListener
 
     public function startDocument()
     {
-        $this->stack = array();
-        $this->keys = array();
+        $this->stack = [];
+        $this->keys = [];
     }
 
     public function startObject()
@@ -57,15 +56,15 @@ class InMemoryListener extends IdleListener
         $this->insertValue($value);
     }
 
-    private function startComplexValue($type)
+    protected function startComplexValue($type)
     {
         // We keep a stack of complex values (i.e. arrays and objects) as we build them,
         // tagged with the type that they are so we know how to add new values.
-        $current_item = array('type' => $type, 'value' => array());
+        $current_item = ['type' => $type, 'value' => []];
         $this->stack[] = $current_item;
     }
 
-    private function endComplexValue()
+    protected function endComplexValue()
     {
         $obj = array_pop($this->stack);
 
@@ -81,7 +80,7 @@ class InMemoryListener extends IdleListener
 
     // Inserts the given value into the top value on the stack in the appropriate way,
     // based on whether that value is an array or an object.
-    private function insertValue($value)
+    protected function insertValue($value)
     {
         // Grab the top item from the stack that we're currently parsing.
         $current_item = array_pop($this->stack);

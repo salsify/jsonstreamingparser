@@ -26,5 +26,8 @@ interface Listener
      */
     public function value($value);
 
+    /**
+     * @param string $whitespace
+     */
     public function whitespace($whitespace);
 }

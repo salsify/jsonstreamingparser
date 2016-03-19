@@ -10,18 +10,18 @@ use JsonStreamingParser\Listener;
  */
 class GeoJsonListener implements Listener
 {
-    private $json;
+    protected $json;
 
-    private $stack;
-    private $key;
+    protected $stack;
+    protected $key;
 
     // Level is required so we know how nested we are.
-    private $level;
+    protected $level;
 
     /**
      * @var Callable
      */
-    private $callback;
+    protected $callback;
 
     /**
      *
@@ -39,11 +39,11 @@ class GeoJsonListener implements Listener
 
     public function startDocument()
     {
-        $this->stack = array();
+        $this->stack = [];
         $this->level = 0;
         // Key is an array so that we can can remember keys per level to avoid
         // it being reset when processing child keys.
-        $this->key = array();
+        $this->key = [];
     }
 
     public function endDocument()
@@ -54,10 +54,10 @@ class GeoJsonListener implements Listener
     public function startObject()
     {
         $this->level++;
-        $this->stack[] = array();
+        $this->stack[] = [];
         // Reset the stack when entering the second level
         if ($this->level == 2) {
-            $this->stack = array();
+            $this->stack = [];
             $this->key[$this->level] = null;
         }
     }

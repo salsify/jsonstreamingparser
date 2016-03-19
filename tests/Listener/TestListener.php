@@ -6,12 +6,12 @@ use JsonStreamingParser\Listener;
 class TestListener implements Listener
 {
 
-    public $order = array();
+    public $order = [];
 
-    public $positions = array();
+    public $positions = [];
 
-    private $currentLine;
-    private $currentChar;
+    protected $currentLine;
+    protected $currentChar;
 
     public function filePosition($line, $char)
     {
@@ -57,7 +57,7 @@ class TestListener implements Listener
     public function value($value)
     {
         $this->order[] = __FUNCTION__ . ' = ' . self::stringify($value);
-        $this->positions[] = array('value' => $value, 'line' => $this->currentLine, 'char' => $this->currentChar);
+        $this->positions[] = ['value' => $value, 'line' => $this->currentLine, 'char' => $this->currentChar];
     }
 
     public function whitespace($whitespace)
