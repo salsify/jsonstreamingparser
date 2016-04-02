@@ -24,6 +24,10 @@ class Parser
     const STACK_KEY = 2;
     const STACK_STRING = 3;
 
+    const UTF8_BOM = 1;
+    const UTF16_BOM = 2;
+    const UTF32_BOM = 3;
+
     /**
      * @var int
      */
@@ -98,6 +102,11 @@ class Parser
      * @var bool
      */
     private $stopParsing = false;
+
+    /**
+     * @var bool
+     */
+    private $utfBom = 0;
 
     /**
      * @param resource $stream
@@ -177,6 +186,11 @@ class Parser
      */
     private function consumeChar($c)
     {
+        // see https://en.wikipedia.org/wiki/Byte_order_mark
+        if ($this->lineNumber == 1 && $this->checkAndSkipUtfBom($c)) {
+            return;
+        }
+
         // valid whitespace characters in JSON (from RFC4627 for JSON) include:
         // space, horizontal tab, line feed or new line, and carriage return.
         // thanks: http://stackoverflow.com/questions/16042274/definition-of-whitespace-in-json
@@ -345,6 +359,36 @@ class Parser
                 $this->throwParseError("Internal error. Reached an unknown state: " . $this->state);
                 break;
         }
+    }
+
+    private function checkAndSkipUtfBom($c) {
+        if ($this->charNumber == 1) {
+            if ($c == chr(239)) {
+                $this->utfBom = self::UTF8_BOM;
+            } elseif ($c == chr(254) || $c == chr(255)) {
+                // NOTE: could also be UTF32_BOM
+                // second character will tell
+                $this->utfBom = self::UTF16_BOM;
+            } elseif ($c == chr(0)) {
+                $this->utfBom = self::UTF32_BOM;
+            }
+        }
+
+        if ($this->utfBom == self::UTF16_BOM && $this->charNumber == 2 &&
+              $c == chr(254)) {
+            $this->utfBom = self::UTF32_BOM;
+        }
+
+        if ($this->utfBom == self::UTF8_BOM && $this->charNumber < 4) {
+            // UTF-8 BOM starts with chr(239) . chr(187) . chr(191)
+            return true;
+        } elseif ($this->utfBom == self::UTF16_BOM && $this->charNumber < 3) {
+            return true;
+        } elseif ($this->utfBom == self::UTF32_BOM && $this->charNumber < 5) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
