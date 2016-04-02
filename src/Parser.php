@@ -184,8 +184,7 @@ class Parser
             !($this->state === self::STATE_IN_STRING ||
                 $this->state === self::STATE_UNICODE ||
                 $this->state === self::STATE_START_ESCAPE ||
-                $this->state === self::STATE_IN_NUMBER ||
-                $this->state === self::STATE_START_DOCUMENT)
+                $this->state === self::STATE_IN_NUMBER)
         ) {
             // we wrap this so that we don't make a ton of unnecessary function calls
             // unless someone really, really cares about whitespace.
