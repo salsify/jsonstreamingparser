@@ -72,8 +72,8 @@ class GeoJsonListener implements Listener
         } else {
             $this->value($obj);
         }
-        // Call the callback when returning to the second level
-        if ($this->level == 2 && is_callable($this->callback)) {
+        // Call the callback when returning to the first level
+        if ($this->level == 1 && is_callable($this->callback)) {
             call_user_func($this->callback, $this->json);
         }
     }
