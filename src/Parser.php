@@ -131,7 +131,7 @@ class Parser
         $this->emitFilePosition = method_exists($listener, 'filePosition');
 
         $this->state = self::STATE_START_DOCUMENT;
-        $this->stack = [];
+        $this->stack = [0];
 
         $this->buffer = '';
         $this->bufferSize = $bufferSize;
@@ -273,6 +273,8 @@ class Parser
                         $this->endObject();
                     } elseif ($c === ',') {
                         $this->state = self::STATE_IN_OBJECT;
+                    } elseif ($c === '{') {
+                        $this->startObject();
                     } else {
                         $this->throwParseError("Expected ',' or '}' while parsing object. Got: " . $c);
                     }
