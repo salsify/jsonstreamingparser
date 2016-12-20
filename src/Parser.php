@@ -349,7 +349,11 @@ class Parser
 
             case self::STATE_START_DOCUMENT:
                 $this->listener->startDocument();
-                $this->startArray();
+                // Fake the opening of a container array
+                // if there is none
+                if ($c !== '[') {
+                    $this->startArray();
+                }
                 if ($c === '[') {
                     $this->startArray();
                 } elseif ($c === '{') {
