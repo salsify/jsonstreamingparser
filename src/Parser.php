@@ -171,6 +171,9 @@ class Parser
                 $this->lineNumber++;
                 $this->charNumber = 1;
             }
+            if($eof){
+                $this->endDocument();
+            }
 
         }
     }
