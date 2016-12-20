@@ -172,6 +172,10 @@ class Parser
                 $this->charNumber = 1;
             }
             if($eof){
+                // If there is no container array
+                // The the script won't know its the 
+                // end of the doc so we force it by
+                // using $eof boolean
                 $this->endDocument();
             }
 
