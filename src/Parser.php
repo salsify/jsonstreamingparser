@@ -215,7 +215,7 @@ class Parser
                     $this->endString();
                 } elseif ($c === '\\') {
                     $this->state = self::STATE_START_ESCAPE;
-                } elseif (($c < "\x1f") || ($c === "\x7f")) {
+                } elseif ($c < "\x1f") {
                     $this->throwParseError("Unescaped control character encountered: " . $c);
                 } else {
                     $this->buffer .= $c;
