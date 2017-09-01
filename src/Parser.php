@@ -187,7 +187,7 @@ class Parser
     private function consumeChar($c)
     {
         // see https://en.wikipedia.org/wiki/Byte_order_mark
-        if ($this->lineNumber == 1 && $this->checkAndSkipUtfBom($c)) {
+        if ($this->charNumber < 5 && $this->lineNumber == 1 && $this->checkAndSkipUtfBom($c)) {
             return;
         }
 
