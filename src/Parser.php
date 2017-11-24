@@ -353,7 +353,7 @@ class Parser
                 break;
 
             case self::STATE_END_DOCUMENT:
-                if ($c !== '[' || $c !== '{') {
+                if ($c !== '[' && $c !== '{') {
                   $this->throwParseError("Expected end of document.");
                 }
                 $this->state = self::STATE_START_DOCUMENT;
