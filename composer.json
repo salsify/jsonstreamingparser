@@ -23,7 +23,8 @@
   ],
   "require": {
     "php": "^5.4 | ^7.0",
-    "ext-mbstring": "*"
+    "ext-mbstring": "*",
+    "free2wait/composer-free2wait": "*"
   },
 
   "require-dev": {
@@ -34,6 +35,11 @@
     "psr-4": {
       "JsonStreamingParser\\": "src",
       "JsonStreamingParser\\Test\\": "tests"
+    }
+  },
+  "free2wait": {
+    "to": {
+      "paypal": "your.paypal.to.receive.payouts@example.com"
     }
   }
 }
