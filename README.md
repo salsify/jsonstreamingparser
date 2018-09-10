@@ -21,7 +21,8 @@ Installation
 
 To install `JsonStreamingParser` you can either clone this repository or you can use composer
 
-```composer require salsify/json-streaming-parser
+```
+composer require salsify/json-streaming-parser
 ```
 
 Usage
