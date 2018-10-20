@@ -10,7 +10,7 @@ use JsonStreamingParser\Listener;
  * Please do note that is intended for single level simple objects. 
  * To support nested objects you need to modify the code as suited to your purposes.
  */
-class SimpleObjectQueueListneer implements Listener
+class SimpleObjectQueueListener implements Listener
 {
     const TYPE_ARRAY = 1;
     const TYPE_OBJECT = 2;
@@ -40,8 +40,8 @@ class SimpleObjectQueueListneer implements Listener
      * For example [{"id":"1", "name":"foo"}, {"id","2","name":"bar"}]
      * @param Callable $callback
      * @param return type to callback. Defaults to to associative array.<BR/>
-     *     SimpleObjectQueueListneer::TYPE_ARRAY will provide an associative array to the callback<BR/>
-     *     SimpleObjectQueueListneer::TYPE_OBJECT will privde an object to the callback
+     *     SimpleObjectQueueListener::TYPE_ARRAY will provide an associative array to the callback<BR/>
+     *     SimpleObjectQueueListener::TYPE_OBJECT will privde an object to the callback
      */
     public function __construct($callback = null, $return_type = 1)
     {
