@@ -1,17 +1,21 @@
 <?php
+
+declare(strict_types=1);
+
 namespace JsonStreamingParser\Test;
 
-use JsonStreamingParser\Parser;
 use JsonStreamingParser\Listener\CorruptedJsonListener;
+use JsonStreamingParser\Parser;
+use PHPUnit\Framework\TestCase;
 
-class CorruptedJsonListenerTest extends \PHPUnit_Framework_TestCase
+class CorruptedJsonListenerTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
-        $filePath = dirname(__FILE__) . '/data/example.corrupted.json';
-        
+        $filePath = __DIR__.'/data/example.corrupted.json';
+
         $listener = new CorruptedJsonListener();
-        $stream = fopen($filePath, 'r');
+        $stream = fopen($filePath, 'rb');
         try {
             $parser = new Parser($stream, $listener);
             $parser->parse();
@@ -32,11 +36,11 @@ class CorruptedJsonListenerTest extends \PHPUnit_Framework_TestCase
                     'type' => 'Feature',
                     'geometry' => [
                         'type' => 'Point',
-                        'coordinates' => [102.0, 0.6]
+                        'coordinates' => [102.0, 0.6],
                     ],
                     'properties' => [
-                        'prop0' => 'value0'
-                    ]
+                        'prop0' => 'value0',
+                    ],
                 ],
                 [
                     'type' => 'Feature',
@@ -45,13 +49,13 @@ class CorruptedJsonListenerTest extends \PHPUnit_Framework_TestCase
                         'coordinates' => [
                             [
                                 [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0],
-                                [100.0]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                [100.0],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
-        $this->assertEquals($expectedJson, $repairedJson);
+        $this->assertSame($expectedJson, $repairedJson);
     }
 }

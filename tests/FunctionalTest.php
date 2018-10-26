@@ -1,14 +1,31 @@
 <?php
+
+declare(strict_types=1);
+
 namespace JsonStreamingParser\Test;
 
+use JsonStreamingParser\Exception\ParsingException;
 use JsonStreamingParser\Parser;
+use JsonStreamingParser\Test\Listener\FilePositionListener;
+use JsonStreamingParser\Test\Listener\StopEarlyListener;
+use JsonStreamingParser\Test\Listener\TestListener;
+use PHPUnit\Framework\TestCase;
 
-class FunctionalTest extends \PHPUnit_Framework_TestCase
+class FunctionalTest extends TestCase
 {
-    public function testTraverseOrder()
+    /**
+     * @var TestListener
+     */
+    private $listener;
+
+    protected function setUp(): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(fopen(__DIR__ . '/data/example.json', 'r'), $listener);
+        $this->listener = new TestListener();
+    }
+
+    public function testTraverseOrder(): void
+    {
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $this->listener);
         $parser->parse();
 
         $this->assertSame(
@@ -33,13 +50,13 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
                 'key = name',
                 'value = another object',
                 'key = cooler than first object?',
-                'value = 1',
+                'value = true',
                 'key = nested object',
                 'startObject',
                 'key = nested object?',
-                'value = 1',
+                'value = true',
                 'key = is nested array the same combination i have on my luggage?',
-                'value = 1',
+                'value = true',
                 'key = nested array',
                 'startArray',
                 'value = 1',
@@ -55,69 +72,65 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
                 'endArray',
                 'endDocument',
             ],
-            $listener->order
+            $this->listener->order
         );
     }
 
-    public function testListenerGetsNotifiedAboutPositionInFileOfDataRead()
+    public function testListenerGetsNotifiedAboutPositionInFileOfDataRead(): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(fopen(__DIR__ . '/data/dateRanges.json', 'r'), $listener);
+        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'rb'), $this->listener);
         $parser->parse();
 
         $this->assertSame(
             [
-                ['value' => '2013-10-24', 'line' => 5, 'char' => 34,],
-                ['value' => '2013-10-25', 'line' => 5, 'char' => 59,],
-                ['value' => '2013-10-26', 'line' => 6, 'char' => 34,],
-                ['value' => '2013-10-27', 'line' => 6, 'char' => 59,],
-                ['value' => '2013-11-01', 'line' => 10, 'char' => 44,],
-                ['value' => '2013-11-10', 'line' => 10, 'char' => 69,],
+                ['value' => '2013-10-24', 'line' => 5, 'char' => 34],
+                ['value' => '2013-10-25', 'line' => 5, 'char' => 59],
+                ['value' => '2013-10-26', 'line' => 6, 'char' => 34],
+                ['value' => '2013-10-27', 'line' => 6, 'char' => 59],
+                ['value' => '2013-11-01', 'line' => 10, 'char' => 44],
+                ['value' => '2013-11-10', 'line' => 10, 'char' => 69],
             ],
-            $listener->positions
+            $this->listener->positions
         );
     }
 
-    public function testCountsLongLinesCorrectly()
+    public function testCountsLongLinesCorrectly(): void
     {
         $value = str_repeat('!', 10000);
         $longStream = self::getMemoryStream(<<<JSON
 [
-  "$value",
-  "$value"
+  "${value}",
+  "${value}"
 ]
 JSON
         );
 
-        $listener = new Listener\TestListener();
-        $parser = new Parser($longStream, $listener);
+        $parser = new Parser($longStream, $this->listener);
         $parser->parse();
 
-        unset($listener->positions[0]['value']);
-        unset($listener->positions[1]['value']);
+        unset($this->listener->positions[0]['value'], $this->listener->positions[1]['value']);
 
         $this->assertSame(
             [
-                ['line' => 2, 'char' => 10004,],
-                ['line' => 3, 'char' => 10004,],
+                ['line' => 2, 'char' => 10004],
+                ['line' => 3, 'char' => 10004],
             ],
-            $listener->positions
+            $this->listener->positions
         );
     }
 
-    public function testThrowsParingError()
+    public function testThrowsParingError(): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(self::getMemoryStream('{ invalid json }'), $listener);
+        $parser = new Parser(self::getMemoryStream('{ invalid json }'), $this->listener);
 
-        $this->setExpectedException('JsonStreamingParser\\ParsingError', 'Parsing error in [1:3]');
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Parsing error in [1:3]');
         $parser->parse();
     }
 
-    public function testUnicodeSurrogatePair()
+    public function testUnicodeSurrogatePair(): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(self::getMemoryStream('["Treble clef: \\uD834\\uDD1E!"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["Treble clef: \\uD834\\uDD1E!"]'), $this->listener);
         $parser->parse();
 
         $this->assertSame(
@@ -126,61 +139,52 @@ JSON
                 'startArray',
                 'value = Treble clef: 𝄞!',
                 'endArray',
-                'endDocument'
+                'endDocument',
             ],
-            $listener->order
+            $this->listener->order
         );
     }
 
-    public function testMalformedUnicodeLowSurrogate()
+    public function testMalformedUnicodeLowSurrogate(): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(self::getMemoryStream('["\\uD834abc"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["\\uD834abc"]'), $this->listener);
 
-        $this->setExpectedException(
-            'JsonStreamingParser\\ParsingError',
-            "Expected '\\u' following a Unicode high surrogate. Got: ab"
-        );
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage("Expected '\\u' following a Unicode high surrogate. Got: ab");
         $parser->parse();
     }
 
-    public function testInvalidUnicodeHighSurrogate()
+    public function testInvalidUnicodeHighSurrogate(): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(self::getMemoryStream('["\\uAAAA\\uDD1E"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["\\uAAAA\\uDD1E"]'), $this->listener);
 
-        $this->setExpectedException(
-            'JsonStreamingParser\\ParsingError',
-            'Missing high surrogate for Unicode low surrogate.'
-        );
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Missing high surrogate for Unicode low surrogate.');
         $parser->parse();
     }
 
-    public function testInvalidUnicodeLowSurrogate()
+    public function testInvalidUnicodeLowSurrogate(): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(self::getMemoryStream('["\\uD834\\uAAAA"]'), $listener);
+        $parser = new Parser(self::getMemoryStream('["\\uD834\\uAAAA"]'), $this->listener);
 
-        $this->setExpectedException(
-            'JsonStreamingParser\\ParsingError',
-            'Invalid low surrogate following Unicode high surrogate.'
-        );
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Invalid low surrogate following Unicode high surrogate.');
         $parser->parse();
     }
 
-    public function testFilePositionIsCalledIfDefined()
+    public function testFilePositionIsCalledIfDefined(): void
     {
-        $stub = new Listener\FilePositionListener();
+        $filePositionListener = new FilePositionListener();
 
-        $parser = new Parser(fopen(__DIR__ . '/data/example.json', 'r'), $stub);
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $filePositionListener);
         $parser->parse();
 
-        $this->assertTrue($stub->called);
+        $this->assertTrue($filePositionListener->called);
     }
 
-    public function testStopEarly()
+    public function testStopEarly(): void
     {
-        $listener = new Listener\StopEarlyListener();
+        $listener = new StopEarlyListener();
         $parser = new Parser(self::getMemoryStream('["abc","def"]'), $listener);
         $listener->setParser($parser);
         $parser->parse();
@@ -188,7 +192,7 @@ JSON
         $this->assertSame(
             [
                 'startDocument',
-                'startArray'
+                'startArray',
             ],
             $listener->order
         );
@@ -196,67 +200,39 @@ JSON
 
     /**
      * @dataProvider providerTestVariousErrors
-     * @param string $data
-     * @param string $errorMessage
      */
-    public function testVariousErrors($data, $errorMessage)
+    public function testVariousErrors(string $data, string $errorMessage): void
     {
-        $listener = new Listener\TestListener();
-        $parser = new Parser(self::getMemoryStream($data), $listener);
+        $parser = new Parser(self::getMemoryStream($data), $this->listener);
 
-        $this->setExpectedException(
-            'JsonStreamingParser\\ParsingError',
-            $errorMessage
-        );
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage($errorMessage);
         $parser->parse();
     }
 
-    public function providerTestVariousErrors()
+    public function providerTestVariousErrors(): iterable
     {
-        return [
-            [
-                '{"a"}',
-                "Expected ':' after key."
-            ], [
-                '{"a":"b"]',
-                "Expected ',' or '}' while parsing object. Got: ]"
-            ], [
-                '["a","b".',
-                "Expected ',' or ']' while parsing array. Got: ."
-            ], [
-                '{"price":29..95}',
-                "Cannot have multiple decimal points in a number."
-            ], [
-                '{"count":10e1.5}',
-                "Cannot have a decimal point in an exponent."
-            ], [
-                '{"count":10e15e10}',
-                "Cannot have multiple exponents in a number."
-            ], [
-                '{"count":10-15}',
-                "Can only have '+' or '-' after the 'e' or 'E' in a number."
-            ], [
-                '123',
-                "Document must start with object or array."
-            ], [
-                '[123,456]]',
-                "Expected end of document."
-            ], [
-                '["\x7f"]',
-                "Expected escaped character after backslash. Got: x"
-            ],
-        ];
+        yield ['{"a"}', "Expected ':' after key."];
+        yield ['{"a":"b"]', "Expected ',' or '}' while parsing object. Got: ]"];
+        yield ['["a","b".', "Expected ',' or ']' while parsing array. Got: ."];
+        yield ['{"price":29..95}', 'Cannot have multiple decimal points in a number.'];
+        yield ['{"count":10e1.5}', 'Cannot have a decimal point in an exponent.'];
+        yield ['{"count":10e15e10}', 'Cannot have multiple exponents in a number.'];
+        yield ['{"count":10-15}', "Can only have '+' or '-' after the 'e' or 'E' in a number."];
+        yield ['123', 'Document must start with object or array.'];
+        yield ['[123,456]]', 'Expected end of document.'];
+        yield ['["\x7f"]', 'Expected escaped character after backslash. Got: x'];
     }
 
     /**
-     * @param string $content
      * @return resource
      */
-    private static function getMemoryStream($content)
+    private static function getMemoryStream(string $content)
     {
-        $stream = fopen('php://memory', 'rw');
+        $stream = fopen('php://memory', 'rwb');
         fwrite($stream, $content);
         fseek($stream, 0);
+
         return $stream;
     }
 }

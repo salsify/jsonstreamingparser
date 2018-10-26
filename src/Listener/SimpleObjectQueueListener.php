@@ -1,120 +1,115 @@
 <?php
-namespace JsonStreamingParser\Listener;
 
-use JsonStreamingParser\Listener;
+declare(strict_types=1);
+
+namespace JsonStreamingParser\Listener;
 
 /**
  * This listener is for parsing very simple JSON files that contain an array of objects.
  * For example [{"id":"1", "name":"foo"}, {"id","2","name":"bar"}]
  * This can be useful for seeding databases or importing massive amounts of data.
- * Please do note that is intended for single level simple objects. 
+ * Please do note that is intended for single level simple objects.
  * To support nested objects you need to modify the code as suited to your purposes.
  */
-class SimpleObjectQueueListener implements Listener
+class SimpleObjectQueueListener implements ListenerInterface
 {
-    const TYPE_ARRAY = 1;
-    const TYPE_OBJECT = 2;
-    
-    /** 
-     * @var $currentObject array will hold the current object being parsed as an associative array.
-     */
-    protected $currentObject = [];
-    
-    /**
-     * @var $currentKey string will hold the current key used to feed $currentObject
-     */ 
-    protected $currentKey = null;
+    public const TYPE_ARRAY = 1;
+    public const TYPE_OBJECT = 2;
 
     /**
-     * @var Callable this will be called to perform an action on the compiled object.
+     * @var array will hold the current object being parsed as an associative array
+     */
+    protected $currentObject = [];
+
+    /**
+     * @var string|null will hold the current key used to feed
+     */
+    protected $currentKey;
+
+    /**
+     * @var callable this will be called to perform an action on the compiled object
      */
     protected $callback;
-    
+
     /**
-     * @var integer which return type to provide.
+     * @var int which return type to provide
      */
-    protected $return_type;
-    
+    protected $returnType;
+
     /**
      * Initiate the listener for very simple objects that do not contain nested elements.
-     * For example [{"id":"1", "name":"foo"}, {"id","2","name":"bar"}]
-     * @param Callable $callback
-     * @param return type to callback. Defaults to to associative array.<BR/>
+     * For example [{"id":"1", "name":"foo"}, {"id","2","name":"bar"}].
+     *
+     * @param callable $callback
+     * @param int      $returnType one
+     *
+     * type to callback. Defaults to to associative array.<BR/>
      *     SimpleObjectQueueListener::TYPE_ARRAY will provide an associative array to the callback<BR/>
      *     SimpleObjectQueueListener::TYPE_OBJECT will privde an object to the callback
      */
-    public function __construct($callback = null, $return_type = 1)
+    public function __construct(callable $callback = null, int $returnType = self::TYPE_ARRAY)
     {
+        $this->returnType = $returnType;
         $this->callback = $callback;
     }
 
-    public function startDocument()
-    {
-        $this->reset();
-    }
-    
-    public function endDocument()
+    public function startDocument(): void
     {
         $this->reset();
     }
 
-    public function startObject()
+    public function endDocument(): void
     {
         $this->reset();
     }
 
-    public function endObject()
+    public function startObject(): void
     {
-        /**
+        $this->reset();
+    }
+
+    public function endObject(): void
+    {
+        /*
          * Return the currently compiled object to the callback.
          */
-        if($this->return_type === self::TYPE_ARRAY) {
-            call_user_func($this->callback, $this->currentObject);   
-        }
-        elseif($this->return_type === self::TYPE_OBJECT) {
-            call_user_func($this->callback, (object)$this->currentObject);   
-        }
-        else {
-            throw new Exception("Unsupported callback data type requested.");
+        if (self::TYPE_ARRAY === $this->returnType) {
+            \call_user_func($this->callback, $this->currentObject);
+        } elseif (self::TYPE_OBJECT === $this->returnType) {
+            \call_user_func($this->callback, (object) $this->currentObject);
+        } else {
+            throw new \Exception('Unsupported callback data type requested.');
         }
     }
 
-    public function startArray()
+    public function startArray(): void
     {
-        /** we support an array of objects, not nested arrays. leave this alone **/
+        /* we support an array of objects, not nested arrays. leave this alone */
     }
 
-    public function endArray()
+    public function endArray(): void
     {
-        /** no need to support arrays **/
+        /* no need to support arrays */
     }
 
-    /**
-     * @param string $key
-     */
-    public function key($key)
+    public function key(string $key): void
     {
         $this->currentKey = $key;
     }
 
-    /**
-     * Value may be a string, integer, boolean, null
-     * @param mixed $value
-     */
-    public function value($value)
+    public function value($value): void
     {
         $this->currentObject[$this->currentKey] = $value;
     }
 
-    public function whitespace($whitespace)
+    public function whitespace(string $whitespace): void
     {
-        // do nothing
     }
-    
+
     /**
-     * Reset all the values to default
+     * Reset all the values to default.
      */
-    protected function reset() 
+    protected function reset(): void
     {
         $this->currentObject = [];
         $this->currentKey = null;

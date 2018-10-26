@@ -1,14 +1,18 @@
 <?php
+
+declare(strict_types=1);
+
 namespace JsonStreamingParser\Test;
 
 use JsonStreamingParser\Parser;
+use PHPUnit\Framework\TestCase;
 
-class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
+class SubsetConsumerTest extends TestCase
 {
-    public function testProposesAJsonSubsetToConsume()
+    public function testProposesAJsonSubsetToConsume(): void
     {
-        $listener = new Listener\DatesRangeConsumer;
-        $parser = new Parser(fopen(__DIR__ . '/data/dateRanges.json', 'r'), $listener);
+        $listener = new Listener\DatesRangeConsumer();
+        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'rb'), $listener);
         $parser->parse();
 
         $this->assertSame(
@@ -30,15 +34,16 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider differentJsonFiles
+     *
      * @param string $fileToProcess
      */
-    public function testCollectsStructureCorrectly($fileToProcess)
+    public function testCollectsStructureCorrectly($fileToProcess): void
     {
-        $listener = new Listener\IdealConsumer;
-        $parser = new Parser(fopen($fileToProcess, 'r'), $listener);
+        $listener = new Listener\IdealConsumer();
+        $parser = new Parser(fopen($fileToProcess, 'rb'), $listener);
         $parser->parse();
 
-        $this->assertEquals(
+        $this->assertSame(
             json_decode(file_get_contents($fileToProcess), true),
             $listener->data
         );
@@ -46,13 +51,13 @@ class SubsetConsumerTest extends \PHPUnit_Framework_TestCase
 
     public static function differentJsonFiles()
     {
-        $dataDir = __DIR__ . '/data';
+        $dataDir = __DIR__.'/data';
 
         return [
-            [$dataDir . '/example.json'],
-            [$dataDir . '/plain.json'],
-            [$dataDir . '/dateRanges.json'],
-            [$dataDir . '/escapedChars.json'],
+            [$dataDir.'/example.json'],
+            [$dataDir.'/plain.json'],
+            [$dataDir.'/dateRanges.json'],
+            [$dataDir.'/escapedChars.json'],
         ];
     }
 }
