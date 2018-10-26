@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+### Security
+
+## [v8.0.0](https://github.com/salsify/jsonstreamingparser/releases/tag/v8.0)
+### Added
 - Added php-cs-fixer to CI analysis
 - Added phpstan to CI analysis
 - Added `PositionAwareInterface` to expose `setFilePosition()` method
@@ -17,8 +25,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved `ParsingError` class to `Exception\ParsingException`
 - Moved `ListenerInterface` class to `Listener\ListenerInterface`
 - Updated Travis integration
-
-### Deprecated
-### Removed
-### Fixed
-### Security
