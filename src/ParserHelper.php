@@ -12,6 +12,11 @@ abstract class ParserHelper
         return ctype_digit($ctext) || '-' === $ctext;
     }
 
+    public static function isHexCharacter(string $char): bool
+    {
+        return ctype_xdigit($char);
+    }
+
     /**
      * @see http://stackoverflow.com/questions/1805802/php-convert-unicode-codepoint-to-utf-8
      */
