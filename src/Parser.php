@@ -339,11 +339,11 @@ class Parser
                 break;
 
             case self::STATE_END_DOCUMENT:
-                if ($c !== '[' && $c !== '{') {
-                  $this->throwParseError("Expected end of document.");
+                if ('[' !== $char && '{' !== $char) {
+                    $this->throwParseError('Expected end of document.');
                 }
                 $this->state = self::STATE_START_DOCUMENT;
-                $this->consumeChar($c);
+                $this->consumeChar($char);
                 break;
 
             case self::STATE_DONE:
@@ -520,15 +520,15 @@ class Parser
     /**
      * @throws ParsingException
      */
-    private function processUnicodeCharacter(string $c): void
+    private function processUnicodeCharacter(string $char): void
     {
-        if (!ParserHelper::isHexCharacter($c)) {
+        if (!ParserHelper::isHexCharacter($char)) {
             $this->throwParseError(
                 'Expected hex character for escaped Unicode character. '
-                .'Unicode parsed: '.implode('', $this->unicodeBuffer).' and got: '.$c
+                .'Unicode parsed: '.implode('', $this->unicodeBuffer).' and got: '.$char
             );
         }
-        $this->unicodeBuffer[] = $c;
+        $this->unicodeBuffer[] = $char;
         if (4 === \count($this->unicodeBuffer)) {
             $codepoint = hexdec(implode('', $this->unicodeBuffer));
 
