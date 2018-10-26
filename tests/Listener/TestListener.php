@@ -70,7 +70,7 @@ class TestListener implements ListenerInterface, PositionAwareInterface
     private static function stringify($value)
     {
         if (\is_bool($value)) {
-            return $value ? 'true': 'false';
+            return $value ? 'true' : 'false';
         }
         if (null === $value) {
             return 'NULL';

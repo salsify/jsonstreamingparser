@@ -380,11 +380,6 @@ class Parser
         return false;
     }
 
-    private function isHexCharacter(string $c): bool
-    {
-        return ctype_xdigit($c);
-    }
-
     /**
      * @throws ParsingException
      */
@@ -518,7 +513,7 @@ class Parser
      */
     private function processUnicodeCharacter(string $c): void
     {
-        if (!$this->isHexCharacter($c)) {
+        if (!ParserHelper::isHexCharacter($c)) {
             $this->throwParseError(
                 'Expected hex character for escaped Unicode character. '
                 .'Unicode parsed: '.implode('', $this->unicodeBuffer).' and got: '.$c
@@ -595,7 +590,7 @@ class Parser
         $this->endSpecialValue(null, 'null');
     }
 
-    private function endSpecialValue($value, $stringValue): void
+    private function endSpecialValue($value, string $stringValue): void
     {
         if ($this->buffer === $stringValue) {
             $this->listener->value($value);
