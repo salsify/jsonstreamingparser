@@ -11,6 +11,7 @@ use JsonStreamingParser\Listener\PositionAwareInterface;
 class Parser
 {
     const STATE_START_DOCUMENT = 0;
+    const STATE_END_DOCUMENT = 14;
     const STATE_DONE = -1;
     const STATE_IN_ARRAY = 1;
     const STATE_IN_OBJECT = 2;
@@ -337,6 +338,14 @@ class Parser
                 }
                 break;
 
+            case self::STATE_END_DOCUMENT:
+                if ($c !== '[' && $c !== '{') {
+                  $this->throwParseError("Expected end of document.");
+                }
+                $this->state = self::STATE_START_DOCUMENT;
+                $this->consumeChar($c);
+                break;
+
             case self::STATE_DONE:
                 $this->throwParseError('Expected end of document.');
                 break;
@@ -604,7 +613,7 @@ class Parser
     private function endDocument(): void
     {
         $this->listener->endDocument();
-        $this->state = self::STATE_DONE;
+        $this->state = self::STATE_END_DOCUMENT;
     }
 
     /**
