@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JsonStreamingParser\Listener;
 
 /**
@@ -12,7 +14,15 @@ namespace JsonStreamingParser\Listener;
 class InMemoryListener extends IdleListener
 {
     protected $result;
+
+    /**
+     * @var array
+     */
     protected $stack;
+
+    /**
+     * @var string[]
+     */
     protected $keys;
 
     public function getJson()
@@ -20,51 +30,51 @@ class InMemoryListener extends IdleListener
         return $this->result;
     }
 
-    public function startDocument()
+    public function startDocument(): void
     {
         $this->stack = [];
         $this->keys = [];
     }
 
-    public function startObject()
+    public function startObject(): void
     {
         $this->startComplexValue('object');
     }
 
-    public function endObject()
+    public function endObject(): void
     {
         $this->endComplexValue();
     }
 
-    public function startArray()
+    public function startArray(): void
     {
         $this->startComplexValue('array');
     }
 
-    public function endArray()
+    public function endArray(): void
     {
         $this->endComplexValue();
     }
 
-    public function key($key)
+    public function key(string $key): void
     {
         $this->keys[] = $key;
     }
 
-    public function value($value)
+    public function value($value): void
     {
         $this->insertValue($value);
     }
 
-    protected function startComplexValue($type)
+    protected function startComplexValue($type): void
     {
         // We keep a stack of complex values (i.e. arrays and objects) as we build them,
         // tagged with the type that they are so we know how to add new values.
-        $current_item = ['type' => $type, 'value' => []];
-        $this->stack[] = $current_item;
+        $currentItem = ['type' => $type, 'value' => []];
+        $this->stack[] = $currentItem;
     }
 
-    protected function endComplexValue()
+    protected function endComplexValue(): void
     {
         $obj = array_pop($this->stack);
 
@@ -80,21 +90,21 @@ class InMemoryListener extends IdleListener
 
     // Inserts the given value into the top value on the stack in the appropriate way,
     // based on whether that value is an array or an object.
-    protected function insertValue($value)
+    protected function insertValue($value): void
     {
         // Grab the top item from the stack that we're currently parsing.
-        $current_item = array_pop($this->stack);
+        $currentItem = array_pop($this->stack);
 
         // Examine the current item, and then:
         //   - if it's an object, associate the newly-parsed value with the most recent key
         //   - if it's an array, push the newly-parsed value to the array
-        if ($current_item['type'] === 'object') {
-            $current_item['value'][array_pop($this->keys)] = $value;
+        if ('object' === $currentItem['type']) {
+            $currentItem['value'][array_pop($this->keys)] = $value;
         } else {
-            $current_item['value'][] = $value;
+            $currentItem['value'][] = $value;
         }
 
         // Replace the current item on the stack.
-        $this->stack[] = $current_item;
+        $this->stack[] = $currentItem;
     }
 }

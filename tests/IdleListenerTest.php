@@ -1,15 +1,19 @@
 <?php
+
+declare(strict_types=1);
+
 namespace JsonStreamingParser\Test;
 
-use JsonStreamingParser\Parser;
 use JsonStreamingParser\Listener\IdleListener;
+use JsonStreamingParser\Parser;
+use PHPUnit\Framework\TestCase;
 
-class IdleListenerTest extends \PHPUnit_Framework_TestCase
+class IdleListenerTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
         $listener = new IdleListener();
-        $stream = fopen(dirname(__FILE__) . '/data/example.json', 'r');
+        $stream = fopen(__DIR__.'/data/example.json', 'rb');
         try {
             $parser = new Parser($stream, $listener, PHP_EOL, true);
             $parser->parse();
@@ -18,5 +22,8 @@ class IdleListenerTest extends \PHPUnit_Framework_TestCase
             fclose($stream);
             throw $e;
         }
+
+        // Ensure no exception is thrown
+        $this->assertTrue(true);
     }
 }

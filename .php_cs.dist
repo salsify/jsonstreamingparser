@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+
+$finder = Finder::create()
+    ->in(__DIR__)
+;
+
+return Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules([
+        '@Symfony' => true,
+        '@Symfony:risky' => true,
+        'align_multiline_comment' => true,
+        'array_indentation' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'combine_consecutive_issets' => true,
+        'combine_consecutive_unsets' => true,
+        'declare_strict_types' => true,
+        'explicit_indirect_variable' => true,
+        'explicit_string_variable' => true,
+        'fully_qualified_strict_types' => true,
+        'heredoc_to_nowdoc' => true,
+        'list_syntax' => [
+            'syntax' => 'short',
+        ],
+        'logical_operators' => true,
+        // Avoid forcing mb_str functions, as it would break the internal unicode handling
+        'mb_str_functions' => false,
+        'method_chaining_indentation' => true,
+        'multiline_comment_opening_closing' => true,
+        'multiline_whitespace_before_semicolons' => [
+            'strategy' => 'new_line_for_chained_calls',
+        ],
+        'no_alternative_syntax' => true,
+        'no_binary_string' => true,
+        'no_null_property_initialization' => true,
+        'no_php4_constructor' => true,
+        'no_short_echo_tag' => true,
+        'no_superfluous_elseif' => true,
+        'no_superfluous_phpdoc_tags' => true,
+        'no_unreachable_default_argument_value' => true,
+        'no_unset_on_property' => true,
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'ordered_class_elements' => true,
+        'ordered_imports' => true,
+        'php_unit_dedicate_assert' => true,
+        'php_unit_expectation' => true,
+        'php_unit_mock' => true,
+        'php_unit_namespaced' => true,
+        'php_unit_no_expectation_annotation' => true,
+        'php_unit_ordered_covers' => true,
+        'php_unit_set_up_tear_down_visibility' => true,
+        'php_unit_strict' => true,
+        'php_unit_test_annotation' => true,
+        'phpdoc_add_missing_param_annotation' => true,
+        'phpdoc_order' => true,
+        'phpdoc_trim_consecutive_blank_line_separation' => true,
+        'return_assignment' => true,
+        'strict_comparison' => true,
+        'strict_param' => true,
+        'ternary_to_null_coalescing' => true,
+        'void_return' => true,
+    ])
+    ->setFinder($finder)
+;

@@ -1,23 +1,27 @@
 <?php
+
+declare(strict_types=1);
+
 namespace JsonStreamingParser\Test;
 
-use JsonStreamingParser\Parser;
 use JsonStreamingParser\Listener\GeoJsonListener;
+use JsonStreamingParser\Parser;
+use PHPUnit\Framework\TestCase;
 
-class GeoJsonListenerTest extends \PHPUnit_Framework_TestCase
+class GeoJsonListenerTest extends TestCase
 {
-    public function testExample()
+    public function testExample(): void
     {
-        $filePath = dirname(__FILE__) . '/data/example.geojson';
+        $filePath = __DIR__.'/data/example.geojson';
 
         $coordsCount = 0;
         $figures = [];
 
-        $listener = new GeoJsonListener(function ($item) use (&$coordsCount, &$figures) {
-            $coordsCount += count($item['geometry']['coordinates']);
+        $listener = new GeoJsonListener(function ($item) use (&$coordsCount, &$figures): void {
+            $coordsCount += \count($item['geometry']['coordinates']);
             $figures[] = $item['geometry']['type'];
         });
-        $stream = fopen($filePath, 'r');
+        $stream = fopen($filePath, 'rb');
         try {
             $parser = new Parser($stream, $listener);
             $parser->parse();
@@ -27,9 +31,9 @@ class GeoJsonListenerTest extends \PHPUnit_Framework_TestCase
             throw $e;
         }
 
-        $this->assertEquals(7, $coordsCount);
+        $this->assertSame(7, $coordsCount);
 
         $expectedFigures = ['Point', 'LineString', 'Polygon'];
-        $this->assertEquals($expectedFigures, $figures);
+        $this->assertSame($expectedFigures, $figures);
     }
 }

@@ -1,28 +1,31 @@
 <?php
+
+declare(strict_types=1);
+
 namespace JsonStreamingParser\Test;
 
-use JsonStreamingParser\Parser;
 use JsonStreamingParser\Listener\InMemoryListener;
+use JsonStreamingParser\Parser;
+use PHPUnit\Framework\TestCase;
 
-class InMemoryListenerTest extends \PHPUnit_Framework_TestCase
+class InMemoryListenerTest extends TestCase
 {
-    public function testExampleJson()
+    public function testExampleJson(): void
     {
-        $testfile = dirname(__FILE__) . '/data/example.json';
+        $testfile = __DIR__.'/data/example.json';
         $this->assertParsesCorrectly($testfile);
     }
 
-    public function testGeoJson()
+    public function testGeoJson(): void
     {
-        $testfile = dirname(__FILE__) . '/data/example.geojson';
+        $testfile = __DIR__.'/data/example.geojson';
         $this->assertParsesCorrectly($testfile);
     }
 
-    private function assertParsesCorrectly($testfile)
+    private function assertParsesCorrectly($testfile): void
     {
-        // Parse using an InMemoryListener instance
         $listener = new InMemoryListener();
-        $stream = fopen($testfile, 'r');
+        $stream = fopen($testfile, 'rb');
         try {
             $parser = new Parser($stream, $listener);
             $parser->parse();

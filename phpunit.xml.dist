@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="true"
-         syntaxCheck="true"
-         bootstrap="./vendor/autoload.php"
+
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.4/phpunit.xsd"
+        colors                                     = "true"
+        beStrictAboutOutputDuringTests             = "true"
+        beStrictAboutResourceUsageDuringSmallTests = "true"
+        enforceTimeLimit                           = "true"
+        failOnWarning                              = "true"
+        failOnRisky                                = "true"
+        timeoutForSmallTests                       = "3"
+        timeoutForMediumTests                      = "20"
+        timeoutForLargeTests                       = "120"
+        verbose                                    = "true"
+        bootstrap                                  = "vendor/autoload.php"
 >
     <testsuites>
-        <testsuite name="All">
-            <directory>./tests</directory>
+        <testsuite name="JSON Straming Parser Test Suite">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -1,18 +1,19 @@
 language: php
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-  - 7.2
-  - hhvm
+    - 7.1
+    - 7.2
 
 matrix:
-  allow_failures:
-    - php: hhvm
+    fast_finish: true
+
+cache:
+    directories:
+        - vendor/
+        - tools/
 
 before_script:
-  - composer install --dev
+    - composer install --optimize-autoloader --no-suggest --quiet
 
-script: vendor/bin/phpunit
+script:
+    - make phpcs
+    - make test

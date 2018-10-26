@@ -1,7 +1,6 @@
-test-data
-tmp
 /.idea
+/.php_cs.cache
 /composer.lock
+/phpunit.xml
+/tools
 /vendor
-/build
-phpunit.xml
