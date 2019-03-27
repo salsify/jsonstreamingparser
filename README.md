@@ -60,6 +60,8 @@ Projects using this library
 
 [JSON Collection Parser](https://github.com/MAXakaWIZARD/JsonCollectionParser)
 
+[JSON Objects](https://github.com/cerbero90/json-objects)
+
 
 License
 -------
