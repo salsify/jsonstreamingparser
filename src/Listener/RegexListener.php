@@ -191,7 +191,7 @@ class RegexListener implements ListenerInterface  {
         $this->endObject();
     }
 
-    public function whitespace($whitespace): void    {}
+    public function whitespace(string $whitespace): void    {}
 
     public function startDocument(): void    {
         $this->complete = false;
