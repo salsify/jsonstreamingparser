@@ -53,6 +53,7 @@ class RegexListener implements ListenerInterface  {
      * @var int
      */
     const ARRAY = 0;
+    
     /**
      * Various matching criteria along with the callback to execute.
      * @var callable[] - [regex => callable, ...]
@@ -146,7 +147,7 @@ class RegexListener implements ListenerInterface  {
         
         $this->stack[] = [];
         $this->label = null;
-        // If not currently interested in the data, check if it is now.
+        // If not already interested in the data, check if it is now.
         if ( $this->levelInterest == PHP_INT_MAX ) {
             $path = $this->getPath();
             foreach ( array_keys($this->dataMatch) as $pathReg )    {

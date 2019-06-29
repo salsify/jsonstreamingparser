@@ -9,27 +9,27 @@ ini_set('display_errors', 1);
 
 $filename = __DIR__.'/../tests/data/example.json';
 
-echo "Check where the 'name' elements are...".PHP_EOL;
+echo "Check where the 'name' elements are ('(.*/name)')...".PHP_EOL;
 $listener = new RegexListener(["(.*/name)" => function ($data, $path ) {
-    echo $path."=".$data.PHP_EOL;
+    echo "Location is ".$path." value is ".$data.PHP_EOL;
 }]);
 $fp = fopen($filename, 'rb');
 $parser = new Parser($fp, $listener);
 $parser->parse();
 fclose($fp);
  
-echo PHP_EOL."Extract the second 'name' element...".PHP_EOL;
+echo PHP_EOL."Extract the second 'name' element ('/1/name')...".PHP_EOL;
 $listener = new RegexListener(["/1/name" => function ($data ) {
-    echo "/1/name=".$data.PHP_EOL;
+    echo "Value for '/1/name' is ".$data.PHP_EOL;
 }]);
 $fp = fopen($filename, 'rb');
 $parser = new Parser($fp, $listener);
 $parser->parse();
 fclose($fp);
 
-echo PHP_EOL."Extract each base element and print 'name'...".PHP_EOL;
+echo PHP_EOL."Extract each base element ('(/\d*)') and print 'name' element of this...".PHP_EOL;
 $listener = new RegexListener(["(/\d*)" => function ($data, $path ) {
-    echo $path."=".$data['name'].PHP_EOL;
+    echo "Location is ".$path." value is ".$data['name'].PHP_EOL;
 }]);
 $fp = fopen($filename, 'rb');
 $parser = new Parser($fp, $listener);
@@ -37,9 +37,9 @@ $parser->parse();
 fclose($fp);
     
 
-echo PHP_EOL."Extract 'nested array' element...".PHP_EOL;
+echo PHP_EOL."Extract 'nested array' element ('(/.*/nested array)')...".PHP_EOL;
 $listener = new RegexListener(["(/.*/nested array)" => function ($data, $path ) {
-    echo $path."=".print_r($data,true).PHP_EOL;
+    echo "Location is ".$path." value is ".print_r($data,true).PHP_EOL;
 }]);
 $fp = fopen($filename, 'rb');
 $parser = new Parser($fp, $listener);

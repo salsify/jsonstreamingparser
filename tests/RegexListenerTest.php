@@ -192,7 +192,7 @@ class RegexListenerTest extends TestCase {
     /**
      * Testing the capture group in the JSON path is passed to callback.
      * As the example file has an 'endDate' element in various elements,
-     * the path of /(.*)/endDate should result in both the element
+     * the path of (.*)/endDate should result in both the element
      * value as well as the base element name being passed into the callback.
      */
     public function testCaptureGroup ()    {
