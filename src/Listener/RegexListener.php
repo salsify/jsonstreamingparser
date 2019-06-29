@@ -237,7 +237,7 @@ class RegexListener implements ListenerInterface  {
         $this->objectEncountered = false;
     }
 
-    public function key($key): void   {
+    public function key(string $key): void   {
         $this->label = $key;
     }    
     
