@@ -17,8 +17,8 @@ that talks about pros and cons vs. the standard PHP JSON parser.
 If you've ever used a [SAX parser](http://en.wikipedia.org/wiki/Simple_API_for_XML) for XML (or even JSON) in another
 language, that's what this is. Except for JSON in PHP.
 
-This package is compliant with [PSR-4](http://www.php-fig.org/psr/4/), [PSR-1](http://www.php-fig.org/psr/1/), and
-[PSR-2](http://www.php-fig.org/psr/2/).
+This package is compliant with [PSR-4](https://www.php-fig.org/psr/psr-4/), [PSR-1](https://www.php-fig.org/psr/psr-1/), and
+[PSR-2](https://www.php-fig.org/psr/psr-2/).
 If you notice compliance oversights, please send a patch via pull request.
 
 Installation
