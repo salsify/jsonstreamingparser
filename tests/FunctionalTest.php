@@ -7,6 +7,7 @@ namespace JsonStreamingParser\Test;
 use JsonStreamingParser\Exception\ParsingException;
 use JsonStreamingParser\Parser;
 use JsonStreamingParser\Test\Listener\FilePositionListener;
+use JsonStreamingParser\Test\Listener\ParserAwareListener;
 use JsonStreamingParser\Test\Listener\StopEarlyListener;
 use JsonStreamingParser\Test\Listener\TestListener;
 use PHPUnit\Framework\TestCase;
@@ -182,11 +183,21 @@ JSON
         $this->assertTrue($filePositionListener->called);
     }
 
+    public function testSetParserIsCalledIfDefined(): void
+    {
+        $parserAwareListener = new ParserAwareListener();
+
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $parserAwareListener);
+        $parser->parse();
+
+        $this->assertTrue($parserAwareListener->called);
+    }
+
     public function testStopEarly(): void
     {
         $listener = new StopEarlyListener();
+
         $parser = new Parser(self::getMemoryStream('["abc","def"]'), $listener);
-        $listener->setParser($parser);
         $parser->parse();
 
         $this->assertSame(

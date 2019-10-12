@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Security
 
+## [v8.1.0](https://github.com/salsify/jsonstreamingparser/releases/tag/v8.1)
+### Added
+- Added `ParserAwareInterface` to expose `setParser()` method
+
 ## [v8.0.0](https://github.com/salsify/jsonstreamingparser/releases/tag/v8.0)
 ### Added
 - Added php-cs-fixer to CI analysis

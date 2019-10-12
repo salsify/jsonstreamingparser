@@ -6,6 +6,7 @@ namespace JsonStreamingParser;
 
 use JsonStreamingParser\Exception\ParsingException;
 use JsonStreamingParser\Listener\ListenerInterface;
+use JsonStreamingParser\Listener\ParserAwareInterface;
 use JsonStreamingParser\Listener\PositionAwareInterface;
 
 class Parser
@@ -114,14 +115,23 @@ class Parser
     /**
      * @param resource $stream
      */
-    public function __construct($stream, ListenerInterface $listener, string $lineEnding = "\n", bool $emitWhitespace = false, int $bufferSize = 8192)
-    {
+    public function __construct(
+        $stream,
+        ListenerInterface $listener,
+        string $lineEnding = "\n",
+        bool $emitWhitespace = false,
+        int $bufferSize = 8192
+    ) {
         if (!\is_resource($stream) || 'stream' !== get_resource_type($stream)) {
             throw new \InvalidArgumentException('Invalid stream provided');
         }
 
-        $this->stream = $stream;
         $this->listener = $listener;
+        if ($this->listener instanceof ParserAwareInterface) {
+            $this->listener->setParser($this);
+        }
+
+        $this->stream = $stream;
         $this->emitWhitespace = $emitWhitespace;
         $this->state = self::STATE_START_DOCUMENT;
         $this->bufferSize = $bufferSize;
