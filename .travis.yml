@@ -17,8 +17,8 @@ before_script:
 script:
   - make phpcs
   - mkdir -p build/logs
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.3' ]]; then make test-coverage  ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" != '7.3' ]]; then make test ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then make test-coverage  ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" != '7.1' ]]; then make test ; fi
 
 after_script:
- - if [[ "$TRAVIS_PHP_VERSION" == '7.3' ]]; then php vendor/bin/php-coveralls -v ; fi
+ - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then php vendor/bin/php-coveralls -v ; fi
