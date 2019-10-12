@@ -31,9 +31,9 @@ class GeoJsonListenerTest extends TestCase
             throw $e;
         }
 
-        $this->assertSame(7, $coordsCount);
+        $this->assertSame(9, $coordsCount);
 
-        $expectedFigures = ['Point', 'LineString', 'Polygon'];
+        $expectedFigures = ['Point', 'LineString', 'Polygon', 'Point'];
         $this->assertSame($expectedFigures, $figures);
     }
 }
