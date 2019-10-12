@@ -15,5 +15,10 @@ before_script:
     - composer install --optimize-autoloader --no-suggest --quiet
 
 script:
-    - make phpcs
-    - make test
+  - make phpcs
+  - mkdir -p build/logs
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.3' ]]; then make test-coverage  ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" != '7.3' ]]; then make test ; fi
+
+after_script:
+ - if [[ "$TRAVIS_PHP_VERSION" == '7.3' ]]; then php vendor/bin/php-coveralls -v ; fi
