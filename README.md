@@ -4,6 +4,7 @@ Streaming JSON parser for PHP
 [![Build Status](https://travis-ci.org/salsify/jsonstreamingparser.png?branch=master)](https://travis-ci.org/salsify/jsonstreamingparser)
 [![GitHub tag](https://img.shields.io/github/tag/salsify/jsonstreamingparser.svg?label=latest)](https://packagist.org/packages/salsify/jsonstreamingparser) 
 [![Packagist](https://img.shields.io/packagist/dt/salsify/json-streaming-parser.svg)](https://packagist.org/packages/salsify/json-streaming-parser)
+[![Coverage Status](https://coveralls.io/repos/salsify/jsonstreamingparser/badge.svg?branch=master)](https://coveralls.io/r/salsify/jsonstreamingparser?branch=master)
 [![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%207.1-8892BF.svg)](https://php.net/)
 [![License](https://img.shields.io/packagist/l/salsify/json-streaming-parser.svg)](https://packagist.org/packages/salsify/json-streaming-parser)
 

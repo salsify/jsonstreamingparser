@@ -32,7 +32,8 @@
   },
 
   "require-dev": {
-    "ext-json": "*"
+    "ext-json": "*",
+    "satooshi/php-coveralls": "~2.0"
   },
   "autoload": {
     "psr-4": {
