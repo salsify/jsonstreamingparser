@@ -13,7 +13,7 @@ class UtfBomSkipperTest extends TestCase
     public function testExample(): void
     {
         $listener = new IdleListener();
-        $stream = fopen(__DIR__.'/data/utf8bom.json', 'rb');
+        $stream = fopen(__DIR__.'/data/utf8bom.json', 'r');
         try {
             $parser = new Parser($stream, $listener, PHP_EOL, true);
             $parser->parse();

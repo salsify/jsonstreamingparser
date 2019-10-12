@@ -53,7 +53,7 @@ class GeoJsonListener implements ListenerInterface
 
     public function startObject(): void
     {
-        ++$this->level;
+        $this->level++;
         $this->stack[] = [];
         // Reset the stack when entering the second level
         if (2 === $this->level) {
@@ -64,7 +64,7 @@ class GeoJsonListener implements ListenerInterface
 
     public function endObject(): void
     {
-        --$this->level;
+        $this->level--;
         $obj = array_pop($this->stack);
         if (empty($this->stack)) {
             // doc is DONE!

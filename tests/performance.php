@@ -16,7 +16,7 @@ $expected = json_decode(file_get_contents($filePath), true);
 assert($expected);
 
 $consumer = new IdealConsumer();
-$parser = new Parser(fopen($filePath, 'rb'), $consumer);
+$parser = new Parser(fopen($filePath, 'r'), $consumer);
 
 $time = microtime(true);
 $parser->parse();

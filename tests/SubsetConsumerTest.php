@@ -12,7 +12,7 @@ class SubsetConsumerTest extends TestCase
     public function testProposesAJsonSubsetToConsume(): void
     {
         $listener = new Listener\DatesRangeConsumer();
-        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'rb'), $listener);
+        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'r'), $listener);
         $parser->parse();
 
         $this->assertSame(
@@ -40,7 +40,7 @@ class SubsetConsumerTest extends TestCase
     public function testCollectsStructureCorrectly($fileToProcess): void
     {
         $listener = new Listener\IdealConsumer();
-        $parser = new Parser(fopen($fileToProcess, 'rb'), $listener);
+        $parser = new Parser(fopen($fileToProcess, 'r'), $listener);
         $parser->parse();
 
         $this->assertSame(

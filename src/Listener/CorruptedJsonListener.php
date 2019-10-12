@@ -47,7 +47,7 @@ class CorruptedJsonListener implements ListenerInterface
 
     public function startObject(): void
     {
-        ++$this->level;
+        $this->level++;
         $this->stack[] = [];
     }
 
@@ -58,7 +58,7 @@ class CorruptedJsonListener implements ListenerInterface
 
     public function endObject(): void
     {
-        --$this->level;
+        $this->level--;
         $obj = array_pop($this->stack);
         if (empty($this->stack)) {
             // doc is DONE!
@@ -104,7 +104,7 @@ class CorruptedJsonListener implements ListenerInterface
         }
 
         $key = $this->keys;
-        for ($i = $this->level - 1; $i > 0; --$i) {
+        for ($i = $this->level - 1; $i > 0; $i--) {
             $value = array_pop($this->stack);
             //value
             $obj = array_pop($this->stack);

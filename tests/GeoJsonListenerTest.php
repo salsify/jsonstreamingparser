@@ -21,7 +21,7 @@ class GeoJsonListenerTest extends TestCase
             $coordsCount += \count($item['geometry']['coordinates']);
             $figures[] = $item['geometry']['type'];
         });
-        $stream = fopen($filePath, 'rb');
+        $stream = fopen($filePath, 'r');
         try {
             $parser = new Parser($stream, $listener);
             $parser->parse();

@@ -157,12 +157,12 @@ class Parser
             $eof = ftell($this->stream) === $pos;
 
             $byteLen = \strlen($line);
-            for ($i = 0; $i < $byteLen; ++$i) {
+            for ($i = 0; $i < $byteLen; $i++) {
                 if ($this->listener instanceof PositionAwareInterface) {
                     $this->listener->setFilePosition($this->lineNumber, $this->charNumber);
                 }
                 $this->consumeChar($line[$i]);
-                ++$this->charNumber;
+                $this->charNumber++;
 
                 if ($this->stopParsing) {
                     return;
@@ -170,7 +170,7 @@ class Parser
             }
 
             if ($ended) {
-                ++$this->lineNumber;
+                $this->lineNumber++;
                 $this->charNumber = 1;
             }
         }
@@ -184,7 +184,10 @@ class Parser
     private function consumeChar(string $char): void
     {
         // see https://en.wikipedia.org/wiki/Byte_order_mark
-        if ($this->charNumber < 5 && 1 === $this->lineNumber && $this->checkAndSkipUtfBom($char)) {
+        if ($this->charNumber < 5
+            && 1 === $this->lineNumber
+            && $this->checkAndSkipUtfBom($char)
+        ) {
             return;
         }
 

@@ -9,7 +9,7 @@ $testfile = __DIR__.'/../tests/data/example.geojson';
 $listener = new \JsonStreamingParser\Listener\GeoJsonListener(function ($item): void {
     var_dump($item);
 });
-$stream = fopen($testfile, 'rb');
+$stream = fopen($testfile, 'r');
 try {
     $parser = new \JsonStreamingParser\Parser($stream, $listener);
     $parser->parse();

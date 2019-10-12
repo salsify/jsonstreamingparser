@@ -26,7 +26,7 @@ class FunctionalTest extends TestCase
 
     public function testTraverseOrder(): void
     {
-        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $this->listener);
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'r'), $this->listener);
         $parser->parse();
 
         $this->assertSame(
@@ -79,7 +79,7 @@ class FunctionalTest extends TestCase
 
     public function testListenerGetsNotifiedAboutPositionInFileOfDataRead(): void
     {
-        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'rb'), $this->listener);
+        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'r'), $this->listener);
         $parser->parse();
 
         $this->assertSame(
@@ -177,7 +177,7 @@ JSON
     {
         $filePositionListener = new FilePositionListener();
 
-        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $filePositionListener);
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'r'), $filePositionListener);
         $parser->parse();
 
         $this->assertTrue($filePositionListener->called);
@@ -187,7 +187,7 @@ JSON
     {
         $parserAwareListener = new ParserAwareListener();
 
-        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $parserAwareListener);
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'r'), $parserAwareListener);
         $parser->parse();
 
         $this->assertTrue($parserAwareListener->called);
@@ -240,7 +240,7 @@ JSON
      */
     private static function getMemoryStream(string $content)
     {
-        $stream = fopen('php://memory', 'rwb');
+        $stream = fopen('php://memory', 'rw');
         fwrite($stream, $content);
         fseek($stream, 0);
 
