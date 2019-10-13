@@ -15,7 +15,7 @@ class CorruptedJsonListenerTest extends TestCase
         $filePath = __DIR__.'/data/example.corrupted.json';
 
         $listener = new CorruptedJsonListener();
-        $stream = fopen($filePath, 'rb');
+        $stream = fopen($filePath, 'r');
         try {
             $parser = new Parser($stream, $listener);
             $parser->parse();

@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace JsonStreamingParser\Test\Listener;
 
+use JsonStreamingParser\Listener\ParserAwareInterface;
 use JsonStreamingParser\Parser;
 
-class StopEarlyListener extends TestListener
+class StopEarlyListener extends TestListener implements ParserAwareInterface
 {
     /**
      * @var Parser;
      */
     protected $parser;
 
-    /**
-     * @param Parser $parser
-     */
-    public function setParser($parser): void
+    public function setParser(Parser $parser): void
     {
         $this->parser = $parser;
     }

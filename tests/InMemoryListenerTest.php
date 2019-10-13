@@ -25,7 +25,7 @@ class InMemoryListenerTest extends TestCase
     private function assertParsesCorrectly($testfile): void
     {
         $listener = new InMemoryListener();
-        $stream = fopen($testfile, 'rb');
+        $stream = fopen($testfile, 'r');
         try {
             $parser = new Parser($stream, $listener);
             $parser->parse();

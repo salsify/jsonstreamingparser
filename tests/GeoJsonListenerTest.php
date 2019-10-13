@@ -21,7 +21,7 @@ class GeoJsonListenerTest extends TestCase
             $coordsCount += \count($item['geometry']['coordinates']);
             $figures[] = $item['geometry']['type'];
         });
-        $stream = fopen($filePath, 'rb');
+        $stream = fopen($filePath, 'r');
         try {
             $parser = new Parser($stream, $listener);
             $parser->parse();
@@ -31,9 +31,9 @@ class GeoJsonListenerTest extends TestCase
             throw $e;
         }
 
-        $this->assertSame(7, $coordsCount);
+        $this->assertSame(9, $coordsCount);
 
-        $expectedFigures = ['Point', 'LineString', 'Polygon'];
+        $expectedFigures = ['Point', 'LineString', 'Polygon', 'Point'];
         $this->assertSame($expectedFigures, $figures);
     }
 }

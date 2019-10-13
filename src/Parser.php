@@ -6,6 +6,7 @@ namespace JsonStreamingParser;
 
 use JsonStreamingParser\Exception\ParsingException;
 use JsonStreamingParser\Listener\ListenerInterface;
+use JsonStreamingParser\Listener\ParserAwareInterface;
 use JsonStreamingParser\Listener\PositionAwareInterface;
 
 class Parser
@@ -114,14 +115,23 @@ class Parser
     /**
      * @param resource $stream
      */
-    public function __construct($stream, ListenerInterface $listener, string $lineEnding = "\n", bool $emitWhitespace = false, int $bufferSize = 8192)
-    {
+    public function __construct(
+        $stream,
+        ListenerInterface $listener,
+        string $lineEnding = "\n",
+        bool $emitWhitespace = false,
+        int $bufferSize = 8192
+    ) {
         if (!\is_resource($stream) || 'stream' !== get_resource_type($stream)) {
             throw new \InvalidArgumentException('Invalid stream provided');
         }
 
-        $this->stream = $stream;
         $this->listener = $listener;
+        if ($this->listener instanceof ParserAwareInterface) {
+            $this->listener->setParser($this);
+        }
+
+        $this->stream = $stream;
         $this->emitWhitespace = $emitWhitespace;
         $this->state = self::STATE_START_DOCUMENT;
         $this->bufferSize = $bufferSize;
@@ -147,12 +157,12 @@ class Parser
             $eof = ftell($this->stream) === $pos;
 
             $byteLen = \strlen($line);
-            for ($i = 0; $i < $byteLen; ++$i) {
+            for ($i = 0; $i < $byteLen; $i++) {
                 if ($this->listener instanceof PositionAwareInterface) {
                     $this->listener->setFilePosition($this->lineNumber, $this->charNumber);
                 }
                 $this->consumeChar($line[$i]);
-                ++$this->charNumber;
+                $this->charNumber++;
 
                 if ($this->stopParsing) {
                     return;
@@ -160,7 +170,7 @@ class Parser
             }
 
             if ($ended) {
-                ++$this->lineNumber;
+                $this->lineNumber++;
                 $this->charNumber = 1;
             }
         }
@@ -174,7 +184,10 @@ class Parser
     private function consumeChar(string $char): void
     {
         // see https://en.wikipedia.org/wiki/Byte_order_mark
-        if ($this->charNumber < 5 && 1 === $this->lineNumber && $this->checkAndSkipUtfBom($char)) {
+        if ($this->charNumber < 5
+            && 1 === $this->lineNumber
+            && $this->checkAndSkipUtfBom($char)
+        ) {
             return;
         }
 

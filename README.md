@@ -27,7 +27,7 @@ Installation
 
 To install `JsonStreamingParser` you can either clone this repository or you can use composer
 
-```
+```bash
 composer require salsify/json-streaming-parser
 ```
 
@@ -55,6 +55,12 @@ try {
 That's it! Your `Listener` will receive events from the streaming parser as it works.
 
 There is a complete example of this in `example/example.php`.
+
+Running tests
+-----
+```bash
+make test
+```
 
 Projects using this library
 ---------------------------

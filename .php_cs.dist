@@ -24,6 +24,9 @@ return Config::create()
         'explicit_string_variable' => true,
         'fully_qualified_strict_types' => true,
         'heredoc_to_nowdoc' => true,
+        'increment_style' => [
+            'style' => 'post',
+        ],
         'list_syntax' => [
             'syntax' => 'short',
         ],
@@ -65,6 +68,10 @@ return Config::create()
         'strict_param' => true,
         'ternary_to_null_coalescing' => true,
         'void_return' => true,
+        'yoda_style' => [
+            'equal' => null,
+            'identical' => null,
+        ],
     ])
     ->setFinder($finder)
 ;

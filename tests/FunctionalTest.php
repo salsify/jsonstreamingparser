@@ -7,6 +7,7 @@ namespace JsonStreamingParser\Test;
 use JsonStreamingParser\Exception\ParsingException;
 use JsonStreamingParser\Parser;
 use JsonStreamingParser\Test\Listener\FilePositionListener;
+use JsonStreamingParser\Test\Listener\ParserAwareListener;
 use JsonStreamingParser\Test\Listener\StopEarlyListener;
 use JsonStreamingParser\Test\Listener\TestListener;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,7 @@ class FunctionalTest extends TestCase
 
     public function testTraverseOrder(): void
     {
-        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $this->listener);
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'r'), $this->listener);
         $parser->parse();
 
         $this->assertSame(
@@ -78,7 +79,7 @@ class FunctionalTest extends TestCase
 
     public function testListenerGetsNotifiedAboutPositionInFileOfDataRead(): void
     {
-        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'rb'), $this->listener);
+        $parser = new Parser(fopen(__DIR__.'/data/dateRanges.json', 'r'), $this->listener);
         $parser->parse();
 
         $this->assertSame(
@@ -176,17 +177,27 @@ JSON
     {
         $filePositionListener = new FilePositionListener();
 
-        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'rb'), $filePositionListener);
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'r'), $filePositionListener);
         $parser->parse();
 
         $this->assertTrue($filePositionListener->called);
     }
 
+    public function testSetParserIsCalledIfDefined(): void
+    {
+        $parserAwareListener = new ParserAwareListener();
+
+        $parser = new Parser(fopen(__DIR__.'/data/example.json', 'r'), $parserAwareListener);
+        $parser->parse();
+
+        $this->assertTrue($parserAwareListener->called);
+    }
+
     public function testStopEarly(): void
     {
         $listener = new StopEarlyListener();
+
         $parser = new Parser(self::getMemoryStream('["abc","def"]'), $listener);
-        $listener->setParser($parser);
         $parser->parse();
 
         $this->assertSame(
@@ -229,7 +240,7 @@ JSON
      */
     private static function getMemoryStream(string $content)
     {
-        $stream = fopen('php://memory', 'rwb');
+        $stream = fopen('php://memory', 'rw');
         fwrite($stream, $content);
         fseek($stream, 0);
 

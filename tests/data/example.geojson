@@ -41,6 +41,15 @@
         },
         "prop0": "value0"
       }
+    },
+    {
+      "type": "Feature",
+      "id": "adresse_bbr_bydel.68",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.607440548809672, 55.68879957907828]
+      },
+      "geometry_name": "wkb_geometry"
     }
   ]
 }

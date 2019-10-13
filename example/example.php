@@ -7,7 +7,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 $testfile = __DIR__.'/../tests/data/example.json';
 
 $listener = new \JsonStreamingParser\Listener\InMemoryListener();
-$stream = fopen($testfile, 'rb');
+$stream = fopen($testfile, 'r');
 try {
     $parser = new \JsonStreamingParser\Parser($stream, $listener);
     $parser->parse();
