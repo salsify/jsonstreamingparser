@@ -1,5 +1,5 @@
 PHPSTAN_LEVEL=5
-PHPSTAN_VERSION="0.10.5"
+PHPSTAN_VERSION="0.12.25"
 
 tools/php-cs-fixer:
 	wget --directory-prefix=tools --quiet https://cs.sensiolabs.org/download/php-cs-fixer-v2.phar
@@ -15,9 +15,11 @@ tools/phpunit:
 	mv tools/phpunit-7.phar tools/phpunit
 	chmod +x tools/phpunit
 
-phpcs: tools/php-cs-fixer tools/phpstan
+phpcs: tools/php-cs-fixer
 	composer install --optimize-autoloader --no-dev --no-suggest --quiet
 	tools/php-cs-fixer fix --dry-run --stop-on-violation -v
+
+phpstan: tools/phpstan
 	tools/phpstan analyze --level=$(PHPSTAN_LEVEL) --no-progress src/
 
 test: tools/phpunit
