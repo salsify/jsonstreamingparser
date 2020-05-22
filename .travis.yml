@@ -19,13 +19,14 @@ cache:
         - tools/
 
 before_script:
-    - composer install --optimize-autoloader --no-suggest --quiet
+    - if [[ "$TRAVIS_PHP_VERSION" != '8.0' ]]; composer install -o -q --no-suggest ; fi
+    - if [[ "$TRAVIS_PHP_VERSION" == '8.0' ]]; composer install -o -q --no-suggest --no-dev ; fi
 
 script:
   - make phpcs
   - mkdir -p build/logs
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then make test-coverage  ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" != '7.1' ]]; then make test ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.4' ]]; then make test-coverage ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" != '7.4' ]]; then make test ; fi
 
 after_script:
- - if [[ "$TRAVIS_PHP_VERSION" == '7.1' ]]; then php vendor/bin/php-coveralls -v ; fi
+ - if [[ "$TRAVIS_PHP_VERSION" == '7.4' ]]; then php vendor/bin/php-coveralls -v ; fi
