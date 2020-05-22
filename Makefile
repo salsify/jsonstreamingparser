@@ -7,7 +7,8 @@ tools/php-cs-fixer:
 	chmod +x tools/php-cs-fixer
 
 tools/phpstan:
-	wget --directory-prefix=tools --quiet https://github.com/phpstan/phpstan-shim/raw/$(PHPSTAN_VERSION)/phpstan
+	wget --directory-prefix=tools --quiet https://github.com/phpstan/phpstan/releases/download/$(PHPSTAN_VERSION)/phpstan.phar
+	mv tools/phpstan.phar tools/phpstan
 	chmod +x tools/phpstan
 
 tools/phpunit:
