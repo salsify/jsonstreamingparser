@@ -30,10 +30,8 @@
     "ext-ctype": "*",
     "ext-mbstring": "*"
   },
-
   "require-dev": {
-    "ext-json": "*",
-    "satooshi/php-coveralls": "~2.0"
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {

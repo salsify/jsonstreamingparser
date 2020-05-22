@@ -10,8 +10,6 @@ matrix:
         -   php: nightly
             env: PHP_CS_FIXER_IGNORE_ENV=1
     fast_finish: true
-    allow_failures:
-        - php: nightly
 
 cache:
     directories:
@@ -19,14 +17,19 @@ cache:
         - tools/
 
 before_script:
-    - if [[ "$TRAVIS_PHP_VERSION" != '8.0' ]]; composer install -o -q --no-suggest ; fi
-    - if [[ "$TRAVIS_PHP_VERSION" == '8.0' ]]; composer install -o -q --no-suggest --no-dev ; fi
+    - echo $TRAVIS_PHP_VERSION
+    - php -v
+    - PHP_VERSION=$(php -r "echo PHP_VERSION;")
+    - echo $PHP_VERSION
+    - composer install -o -q --no-suggest
+    - if [[ "$PHP_VERSION" == '7.3' ]]; then composer install satooshi/php-coveralls ; fi
 
 script:
   - make phpcs
+  - if [[ "$PHP_VERSION" < '8.0' ]]; then make phpstan ; fi
   - mkdir -p build/logs
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.4' ]]; then make test-coverage ; fi
-  - if [[ "$TRAVIS_PHP_VERSION" != '7.4' ]]; then make test ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == '7.3' ]]; then make test-coverage ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" != '7.3' ]]; then make test ; fi
 
 after_script:
- - if [[ "$TRAVIS_PHP_VERSION" == '7.4' ]]; then php vendor/bin/php-coveralls -v ; fi
+ - if [[ "$TRAVIS_PHP_VERSION" == '7.3' ]]; then php vendor/bin/php-coveralls -v ; fi
