@@ -25,7 +25,7 @@ before_script:
     - if [[ "$PHP_VERSION" == '7.3' ]]; then composer require satooshi/php-coveralls ; fi
 
 script:
-    - make phpcs
+    - if [[ "$PHP_VERSION" < '8.0' ]]; then make phpcs ; fi
     - if [[ "$PHP_VERSION" < '8.0' ]]; then make phpstan ; fi
     - mkdir -p build/logs
     - if [[ "$PHP_VERSION" < '7.4' ]]; then make test ; fi
