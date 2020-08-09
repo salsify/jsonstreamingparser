@@ -22,6 +22,7 @@ tools/phpunit-9:
 	chmod +x tools/phpunit
 
 phpcs: tools/php-cs-fixer
+	rm -f .php_cs.cache
 	composer install --optimize-autoloader --no-dev --no-suggest --quiet
 	tools/php-cs-fixer fix --dry-run --stop-on-violation -v
 
