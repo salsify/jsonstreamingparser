@@ -22,7 +22,7 @@ before_script:
     - PHP_VERSION=$(php -r "echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION ;")
     - echo $PHP_VERSION
     - composer install -o -q --no-suggest
-    - if [[ "$PHP_VERSION" == '7.3' ]]; then composer install satooshi/php-coveralls ; fi
+    - if [[ "$PHP_VERSION" == '7.3' ]]; then composer require satooshi/php-coveralls ; fi
 
 script:
     - make phpcs
