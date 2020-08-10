@@ -16,7 +16,13 @@ tools/phpunit:
 	mv tools/phpunit-7.phar tools/phpunit
 	chmod +x tools/phpunit
 
+tools/phpunit-9:
+	wget --directory-prefix=tools --quiet https://phar.phpunit.de/phpunit-9.phar
+	mv tools/phpunit-9.phar tools/phpunit
+	chmod +x tools/phpunit
+
 phpcs: tools/php-cs-fixer
+	rm -f .php_cs.cache
 	composer install --optimize-autoloader --no-dev --no-suggest --quiet
 	tools/php-cs-fixer fix --dry-run --stop-on-violation -v
 
@@ -24,6 +30,10 @@ phpstan: tools/phpstan
 	tools/phpstan analyze --level=$(PHPSTAN_LEVEL) --no-progress src/
 
 test: tools/phpunit
+	composer install --optimize-autoloader --no-suggest --quiet
+	tools/phpunit
+
+test-php-8: tools/phpunit-9
 	composer install --optimize-autoloader --no-suggest --quiet
 	tools/phpunit
 
