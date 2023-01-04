@@ -146,6 +146,8 @@ class Parser
 
         while (!feof($this->stream) && !$eof) {
             $pos = ftell($this->stream);
+            // set the underlying streams chunk size, so it delivers according to the request from stream_get_line
+            stream_set_chunk_size($this->stream, $this->bufferSize);
             $line = stream_get_line($this->stream, $this->bufferSize, $this->lineEnding);
 
             if (false === $line) {
