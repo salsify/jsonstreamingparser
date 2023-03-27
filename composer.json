@@ -31,7 +31,8 @@
     "ext-mbstring": "*"
   },
   "require-dev": {
-    "ext-json": "*"
+    "ext-json": "*",
+    "phpunit/phpunit": "~9.6"
   },
   "autoload": {
     "psr-4": {

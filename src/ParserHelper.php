@@ -47,7 +47,7 @@ abstract class ParserHelper
     public static function convertToNumber(string $text)
     {
         // thanks to #andig for the fix for big integers
-        if (ctype_digit($text) && (float) $text === (float) ((int) $text)) {
+        if (filter_var($text, FILTER_VALIDATE_INT) && (float) $text === (float) ((int) $text)) {
             // natural number PHP_INT_MIN < $num < PHP_INT_MAX
             return (int) $text;
         }
