@@ -352,10 +352,13 @@ class RegexListenerTest extends TestCase
             ->getMock()
         ;
 
-        $valueCall->expects($this->exactly(2))
+        $valueCall->expects($this->exactly(3))
             ->method('__invoke')
-            ->withConsecutive(['1', '/0'],
-                ['2', '/1'])
+            ->withConsecutive(
+                ['1', '/0'],
+                ['2', '/1'],
+                ['-1', '/2']
+            )
         ;
 
         $listener = new RegexListener(["(/\d*)" => $valueCall]);
