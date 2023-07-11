@@ -6,24 +6,24 @@ namespace JsonStreamingParser\Listener;
 
 interface ListenerInterface
 {
-    public function startDocument(): void;
+    public function startDocument();
 
-    public function endDocument(): void;
+    public function endDocument();
 
-    public function startObject(): void;
+    public function startObject();
 
-    public function endObject(): void;
+    public function endObject();
 
-    public function startArray(): void;
+    public function startArray();
 
-    public function endArray(): void;
+    public function endArray();
 
-    public function key(string $key): void;
+    public function key(string $key);
 
     /**
      * @param mixed $value the value as read from the parser, it may be a string, integer, boolean, etc
      */
     public function value($value);
 
-    public function whitespace(string $whitespace): void;
+    public function whitespace(string $whitespace);
 }
